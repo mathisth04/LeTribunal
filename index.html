@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tribunal des Mythes - Pro</title>
+    <title>Le Tribunal des Mythes</title>
     <style>
         :root {
             --bg: #0f172a;
@@ -14,252 +14,311 @@
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
             display: flex;
             flex-direction: column;
             height: 100vh;
-            overflow: hidden;
         }
 
-        /* Navigation */
         nav {
             display: flex;
             background: #1e293b;
-            padding: 10px;
+            padding: 5px;
             justify-content: space-around;
             border-bottom: 1px solid #334155;
+            z-index: 10;
         }
 
         nav button {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-weight: bold;
-            padding: 10px;
-            cursor: pointer;
+            background: none; border: none; color: #94a3b8;
+            font-weight: bold; padding: 12px; cursor: pointer;
         }
 
         nav button.active { color: var(--text); border-bottom: 2px solid var(--accent); }
 
-        .tab-content { display: none; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; height: 100%; }
+        .tab-content { display: none; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; flex: 1; }
         .tab-content.active { display: flex; }
 
-        /* Onglet Joueurs */
-        .input-group { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; max-width: 400px; }
-        input, select, textarea {
-            flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #334155;
-            background: #0f172a; color: white;
-        }
-
-        .player-tag {
-            background: var(--accent);
-            padding: 8px 15px;
-            border-radius: 20px;
-            margin: 5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        /* Écran d'accueil */
+        .setup-section { width: 100%; max-width: 400px; text-align: center; }
         .btn-launch {
-            background: var(--accent);
-            color: white;
-            padding: 15px 40px;
-            border-radius: 15px;
-            font-weight: bold;
-            font-size: 1.2rem;
-            border: none;
-            margin-bottom: 20px;
-            cursor: pointer;
+            background: var(--accent); color: white; border: none;
+            padding: 15px 30px; border-radius: 12px; font-weight: bold;
+            font-size: 1.1rem; cursor: pointer; margin-bottom: 25px; width: 100%;
         }
 
-        /* Jeu */
-        #game-screen { display: none; text-align: center; width: 100%; max-width: 500px; }
+        .input-group { display: flex; gap: 8px; margin-bottom: 15px; }
+        input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: white; }
+
+        .player-item {
+            background: #334155; padding: 10px 15px; border-radius: 8px;
+            margin: 5px 0; display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* Écran de Jeu */
+        #game-view { display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; }
+        
+        .game-header { display: flex; gap: 10px; margin-bottom: 15px; width: 100%; max-width: 320px; }
+        .btn-small { background: #334155; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; flex: 1; }
+
+        .player-turn-display { font-size: 1.2rem; font-weight: bold; color: var(--accent); margin-bottom: 10px; }
+
         .card {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 25px;
-            border: 4px solid var(--text);
-            min-height: 250px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            margin-bottom: 20px;
+            width: 80vw; max-width: 320px; height: 120vw; max-height: 480px;
+            background: var(--card-bg); border-radius: 25px; border: 5px solid var(--text);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 25px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            transition: transform 0.2s; position: relative;
         }
 
-        /* Gestion des cartes */
-        .card-item {
-            background: #1e293b;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 400px;
-            font-size: 0.9rem;
+        .card-cat { position: absolute; top: 20px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem; opacity: 0.8; }
+        .card-text { font-size: 1.4rem; font-weight: 600; line-height: 1.3; }
+
+        /* Editeur */
+        .editor-card { background: #1e293b; padding: 10px; border-radius: 8px; margin: 5px 0; width: 100%; display: flex; justify-content: space-between; font-size: 0.8rem; border-left: 4px solid var(--text); }
+
+        /* Modal Joueurs */
+        #player-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: center;
         }
 
-        .del-btn { color: #ef4444; font-weight: bold; cursor: pointer; }
-
-        .cat-1 { border-color: var(--cat1); }
-        .cat-2 { border-color: var(--cat2); }
-        .cat-3 { border-color: var(--cat3); }
-        .cat-4 { border-color: var(--cat4); }
+        .cat-1 { border-color: var(--cat1); color: var(--cat1); }
+        .cat-2 { border-color: var(--cat2); color: var(--cat2); }
+        .cat-3 { border-color: var(--cat3); color: var(--cat3); }
+        .cat-4 { border-color: var(--cat4); color: var(--cat4); }
+        .card { color: var(--text) !important; }
     </style>
 </head>
 <body>
 
-<nav>
-    <button onclick="showTab('players')" id="btn-players" class="active">PARTIE</button>
-    <button onclick="showTab('rules')">RÈGLES</button>
-    <button onclick="showTab('editor')">CARTES</button>
+<nav id="main-nav">
+    <button onclick="showTab('tab-setup')" id="nav-setup" class="active">PARTIE</button>
+    <button onclick="showTab('tab-rules')">RÈGLES</button>
+    <button onclick="showTab('tab-editor')">CARTES</button>
 </nav>
 
-<div id="players" class="tab-content active">
-    <button class="btn-launch" onclick="startGame()">LANCER LA PARTIE</button>
-    <h3>Nom des joueurs</h3>
-    <div class="input-group">
-        <input type="text" id="player-input" placeholder="Nom du joueur...">
-        <button onclick="addPlayer()" style="background:var(--accent); border:none; color:white; border-radius:8px; padding:0 15px;">+</button>
-    </div>
-    <div id="players-list"></div>
-
-    <div id="game-screen">
-        <div id="game-card" class="card">
-            <div id="card-cat" style="font-size:0.8rem; font-weight:bold; margin-bottom:10px; text-transform:uppercase"></div>
-            <div id="card-text" style="font-size:1.4rem; font-weight:600"></div>
+<div id="tab-setup" class="tab-content active">
+    <div id="setup-controls" class="setup-section">
+        <button class="btn-launch" onclick="launchGame()">LANCER LA PARTIE</button>
+        <h3>Nom des joueurs</h3>
+        <div class="input-group">
+            <input type="text" id="player-name" placeholder="Ajouter un nom...">
+            <button onclick="addPlayer()" style="background:var(--accent); border:none; color:white; padding:0 15px; border-radius:8px;">+</button>
         </div>
-        <button onclick="drawCard()" class="btn-launch">CARTE SUIVANTE</button>
+        <div id="list-players-setup"></div>
+    </div>
+
+    <div id="game-view">
+        <div class="game-header">
+            <button class="btn-small" onclick="quitGame()" style="background:#ef4444;">FIN DE PARTIE</button>
+            <button class="btn-small" onclick="togglePlayerModal(true)">👤 JOUEURS</button>
+        </div>
+        <div class="player-turn-display">C'est le tour de : <span id="current-player-name">?</span></div>
+        <div id="active-card" class="card">
+            <div id="active-cat" class="card-cat">Catégorie</div>
+            <div id="active-text" class="card-text">Appuyez pour piocher</div>
+        </div>
+        <button class="btn-launch" onclick="drawNextCard()" style="margin-top: 20px;">PIOCHER</button>
     </div>
 </div>
 
-<div id="rules" class="tab-content">
-    <h2>Comment jouer ?</h2>
-    <div style="text-align:left; max-width:400px; line-height:1.6">
-        <p><strong>Le principe :</strong> À chaque tour, une carte est tirée. Le groupe ou la personne visée agit.</p>
-        <p><strong>L'Avocat du Diable :</strong> Sur les Accusations et les Pactes, un ami peut défendre l'accusé pendant 30s. Si le groupe vote "Non coupable", l'accusateur boit. Si l'avocat échoue, l'avocat ET l'accusé boivent double.</p>
-        <p><strong>Le Deck :</strong> Les cartes (hors boissons) ne tombent qu'une fois par partie.</p>
+<div id="tab-rules" class="tab-content">
+    <h2>Règles du Jeu</h2>
+    <div style="text-align:left; max-width:350px;">
+        <p><strong>1. Tour de rôle :</strong> Le jeu désigne un joueur à chaque carte. C'est lui qui doit répondre ou effectuer le défi.</p>
+        <p><strong>2. L'Avocat :</strong> Sur les Accusations (bleu) et Pactes (violet), un joueur peut défendre l'accusé. Votez ensuite. Si l'avocat perd, l'avocat ET l'accusé boivent double.</p>
+        <p><strong>3. Cartes uniques :</strong> Une carte tirée ne revient plus, sauf les cartes Boissons (rouges).</p>
     </div>
 </div>
 
-<div id="editor" class="tab-content">
-    <h3>Gérer les cartes</h3>
-    <div class="input-group" style="flex-direction:column">
-        <select id="new-cat">
+<div id="tab-editor" class="tab-content">
+    <h3>Gestion des Cartes</h3>
+    <div class="input-group" style="flex-direction:column; width:100%;">
+        <select id="edit-cat" style="padding:10px; border-radius:8px; background:#1e293b; color:white;">
             <option value="1">Accusation</option>
-            <option value="2">Beverage (Boisson)</option>
+            <option value="2">Beverage</option>
             <option value="3">Pacte du Diable</option>
             <option value="4">Défi Flash</option>
         </select>
-        <textarea id="new-text" placeholder="Effet de la carte..."></textarea>
-        <button onclick="addNewCard()" style="background:var(--cat4); border:none; color:white; padding:10px; border-radius:8px">AJOUTER +</button>
+        <textarea id="edit-text" placeholder="Texte de la carte..." style="padding:10px; margin-top:5px; border-radius:8px; background:#1e293b; color:white;"></textarea>
+        <button onclick="addCustomCard()" style="background:var(--cat4); border:none; color:white; padding:10px; margin-top:5px; border-radius:8px;">AJOUTER +</button>
     </div>
-    <div id="cards-list" style="width:100%"></div>
+    <div id="editor-list" style="width:100%; margin-top:20px;"></div>
+</div>
+
+<div id="player-modal">
+    <div style="background:var(--card-bg); padding:25px; border-radius:20px; width:80%; max-width:300px; text-align:center;">
+        <h3>Joueurs inscrits</h3>
+        <div id="modal-list-players"></div>
+        <button class="btn-small" onclick="togglePlayerModal(false)" style="margin-top:20px; width:100%;">FERMER</button>
+    </div>
 </div>
 
 <script>
-    // Liste initiale
+    // --- DATA ---
     let defaultCards = [
         { cat: 1, text: "Qui est le plus susceptible de texter son ex après 3 verres ?" },
         { cat: 1, text: "Qui est le plus mauvais conducteur du groupe ?" },
-        { cat: 1, text: "L'Infiltré : Qui s'incrusterait à un mariage sans invitation ?" },
-        { cat: 2, text: "Bois 3 gorgées" },
+        { cat: 1, text: "Qui pourrait participer à une émission de télé-réalité ?" },
+        { cat: 1, text: "L'Infiltré : Qui s'incrusterait à un mariage sans être invité ?" },
+        { cat: 1, text: "Le Mytho : Qui ment avec un calme olympien pour se sortir d'une galère ?" },
+        { cat: 1, text: "Le Survivor : Qui survivrait le plus longtemps dans un film d'horreur ?" },
+        { cat: 1, text: "L'innocent : Qui mourrait en premier dans un film d'horreur ?" },
+        { cat: 1, text: "Le Mauvais Plan : Qui finirait avec un tatouage qu'il regrettera toute sa vie ?" },
+        { cat: 1, text: "Le Red Flag : Qui a le pire goût en matière de fréquentation amoureuse ?" },
+        { cat: 1, text: "Le Syndrome de Stockholm : Qui tomberait amoureux de quelqu'un qui ne le calcule pas ?" },
+        { cat: 1, text: "Morphée : Qui disparaît de la soirée pour dormir sans prévenir ?" },
+        { cat: 1, text: "Le Fugitif : Qui part avec les chaussures d'un autre par erreur ?" },
+        
+        { cat: 2, text: "Bois 2 gorgées" }, { cat: 2, text: "Bois 3 gorgées" }, { cat: 2, text: "Bois 4 gorgées" },
+        { cat: 2, text: "Bois 5 gorgées" }, { cat: 2, text: "Bois 1 shot" }, { cat: 2, text: "Distribue 2 gorgées" },
+        { cat: 2, text: "Distribue 3 gorgées" }, { cat: 2, text: "Distribue 4 gorgées" }, { cat: 2, text: "Distribue 5 gorgées" },
         { cat: 2, text: "Distribue 1 shot" },
-        { cat: 3, text: "(Désigne 3 personnes) : Vacances, Business, ou en panne sur l'autoroute ?" },
-        { cat: 4, text: "Le Sniper : Dis POUCE, le dernier qui touche son menton boit 3." }
-        // Ajoute ici le reste de ta liste pour qu'elles y soient par défaut
+
+        { cat: 3, text: "(Désigne 3 personnes) : Vacances, Business, ou abandon sur l'autoroute ?" },
+        { cat: 3, text: "(Désigne 2 personnes) : Sauve-en une d'un incendie, l'autre perd tous ses cheveux." },
+        { cat: 3, text: "(Désigne 3 personnes) : Île déserte. Mariage, une nuit, ou sacrifice ?" },
+        { cat: 3, text: "(Désigne 3 personnes) : Une te prête 1000€, une dit 5 blagues racistes, une se casse la gueule." },
+        { cat: 3, text: "(Désigne 3 personnes) : Kiss, Marry ou Fuck (Le groupe choisit les acteurs)." },
+        { cat: 3, text: "Le Swap de vie : Échange ta famille avec l'un et ton compte avec l'autre." },
+        { cat: 3, text: "Les complices : Classe 3 personnes : du complice de crime au traître absolu." },
+
+        { cat: 4, text: "L'idiot : Chaque fois que tu réponds à une question tu bois (jusqu'à ton prochain tour)." },
+        { cat: 4, text: "Le fou : Désigne deux personnes, elles doivent échanger leurs verres." },
+        { cat: 4, text: "Le Sommelier : Remplis le prochain verre de la personne de ton choix." },
+        { cat: 4, text: "L'ivrogne : Les autres te font ton prochain verre, dosé comme ils veulent." },
+        { cat: 4, text: "Le Muet : Tu ne dois plus parler jusqu'à ton prochain tour." },
+        { cat: 4, text: "Cascade : Tout le monde boit. Tu décides de la fin, mais tu bois 2 de plus." },
+        { cat: 4, text: "Le Miroir : Choisis un jumeau. S'il boit, tu bois, et inversement." },
+        { cat: 4, text: "Le Sniper : Dis 'POUCE'. Le dernier qui touche son menton boit 3." },
+        { cat: 4, text: "Le try Harder : Dis 'POUCE'. Le PREMIER qui touche son menton boit 3." },
+        { cat: 4, text: "Le roi : Instaure une règle jusqu'à la fin de la partie." },
+        { cat: 4, text: "Le géolier : Lie deux personnes dans une chaîne de boisson." },
+        { cat: 4, text: "Le Kamikaze : Bois un gros shot pour forcer 2 personnes à finir leur verre." },
+        { cat: 4, text: "Le T-Rex : Coudes collés au corps. Erreur = 2 gorgées." },
+        { cat: 4, text: "Le Maître des Prénoms : Appelle tout le monde Chef ou Champion. Erreur = 1." },
+        { cat: 4, text: "Le Vote Blanc : Tu n'as plus le droit de voter lors des plaidoiries." }
     ];
 
     let players = [];
+    let customCards = JSON.parse(localStorage.getItem('tribunalCustom')) || [];
     let gameDeck = [];
-    let customCards = JSON.parse(localStorage.getItem('customCards')) || [];
+    let currentPlayerIndex = 0;
 
+    // --- NAVIGATION ---
     function showTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        if(tabId === 'editor') renderEditor();
+        document.getElementById('nav-'+tabId.split('-')[1]).classList.add('active');
+        if(tabId === 'tab-editor') renderEditor();
     }
 
+    // --- PLAYERS ---
     function addPlayer() {
-        const input = document.getElementById('player-input');
-        if(input.value.trim()) {
-            players.push(input.value.trim());
-            input.value = '';
-            renderPlayers();
+        let name = document.getElementById('player-name').value.trim();
+        if(name) {
+            players.push(name);
+            document.getElementById('player-name').value = "";
+            renderPlayersSetup();
         }
     }
 
-    function renderPlayers() {
-        const container = document.getElementById('players-list');
+    function renderPlayersSetup() {
+        let container = document.getElementById('list-players-setup');
         container.innerHTML = players.map((p, i) => `
-            <span class="player-tag">${p} <span onclick="players.splice(${i},1);renderPlayers()" style="cursor:pointer">×</span></span>
+            <div class="player-item"><span>${p}</span><span onclick="players.splice(${i},1);renderPlayersSetup()" style="color:#ef4444; font-weight:bold; cursor:pointer;">×</span></div>
         `).join('');
     }
 
-    function renderEditor() {
-        const container = document.getElementById('cards-list');
-        const all = [...defaultCards, ...customCards];
-        container.innerHTML = all.map((c, i) => `
-            <div class="card-item cat-${c.cat}">
-                <span>${c.text.substring(0,30)}...</span>
-                <span class="del-btn" onclick="deleteCard(${i})">×</span>
-            </div>
-        `).join('');
+    function togglePlayerModal(show) {
+        document.getElementById('player-modal').style.display = show ? 'flex' : 'none';
+        document.getElementById('modal-list-players').innerHTML = players.map(p => `<div>${p}</div>`).join('');
     }
 
-    function deleteCard(index) {
-        if(index < defaultCards.length) {
-            defaultCards.splice(index, 1);
-        } else {
-            customCards.splice(index - defaultCards.length, 1);
-            localStorage.setItem('customCards', JSON.stringify(customCards));
+    // --- GAME LOGIC ---
+    function launchGame() {
+        if(players.length < 2) return alert("Ajoutez au moins 2 joueurs !");
+        gameDeck = [...defaultCards, ...customCards];
+        currentPlayerIndex = 0;
+        document.getElementById('setup-controls').style.display = "none";
+        document.getElementById('main-nav').style.display = "none";
+        document.getElementById('game-view').style.display = "flex";
+        drawNextCard();
+    }
+
+    function quitGame() {
+        if(confirm("Quitter la partie ?")){
+            document.getElementById('setup-controls').style.display = "block";
+            document.getElementById('main-nav').style.display = "flex";
+            document.getElementById('game-view').style.display = "none";
         }
-        renderEditor();
     }
 
-    function addNewCard() {
-        const cat = parseInt(document.getElementById('new-cat').value);
-        const text = document.getElementById('new-text').value;
+    function drawNextCard() {
+        if(gameDeck.length === 0) {
+            alert("Plus de cartes ! Re-mélange du deck.");
+            gameDeck = [...defaultCards, ...customCards];
+        }
+
+        // Tour de rôle
+        document.getElementById('current-player-name').innerText = players[currentPlayerIndex];
+
+        // Pioche
+        let idx = Math.floor(Math.random() * gameDeck.length);
+        let card = gameDeck[idx];
+
+        // Affichage
+        let labels = ["", "Accusation", "Beverage", "Pacte du Diable", "Défi Flash"];
+        let cardEl = document.getElementById('active-card');
+        cardEl.className = `card cat-${card.cat}`;
+        document.getElementById('active-cat').innerText = labels[card.cat];
+        document.getElementById('active-text').innerText = card.text;
+
+        // Retrait sauf si Beverage
+        if(card.cat !== 2) gameDeck.splice(idx, 1);
+
+        // Passer au joueur suivant pour la prochaine carte
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    }
+
+    // --- EDITOR ---
+    function addCustomCard() {
+        let cat = parseInt(document.getElementById('edit-cat').value);
+        let text = document.getElementById('edit-text').value.trim();
         if(text) {
             customCards.push({cat, text});
-            localStorage.setItem('customCards', JSON.stringify(customCards));
-            document.getElementById('new-text').value = '';
+            localStorage.setItem('tribunalCustom', JSON.stringify(customCards));
+            document.getElementById('edit-text').value = "";
             renderEditor();
         }
     }
 
-    function startGame() {
-        if(players.length < 2) return alert("Ajoute au moins 2 joueurs !");
-        gameDeck = [...defaultCards, ...customCards];
-        document.getElementById('game-screen').style.display = 'block';
-        document.querySelector('.btn-launch').style.display = 'none';
-        drawCard();
+    function renderEditor() {
+        let list = document.getElementById('editor-list');
+        let all = [...defaultCards, ...customCards];
+        list.innerHTML = all.map((c, i) => `
+            <div class="editor-card cat-${c.cat}">
+                <span>${c.text.substring(0, 35)}...</span>
+                <span onclick="deleteCard(${i})" style="color:#ef4444; font-weight:bold; cursor:pointer;">×</span>
+            </div>
+        `).join('');
     }
 
-    function drawCard() {
-        if(gameDeck.length === 0) {
-            alert("Plus de cartes ! On remélange.");
-            gameDeck = [...defaultCards, ...customCards];
+    function deleteCard(i) {
+        if(i < defaultCards.length) {
+            defaultCards.splice(i, 1);
+        } else {
+            customCards.splice(i - defaultCards.length, 1);
+            localStorage.setItem('tribunalCustom', JSON.stringify(customCards));
         }
-
-        const idx = Math.floor(Math.random() * gameDeck.length);
-        const card = gameDeck[idx];
-        
-        const labels = ["", "Accusation", "Beverage", "Pacte du Diable", "Défi Flash"];
-        document.getElementById('game-card').className = `card cat-${card.cat}`;
-        document.getElementById('card-cat').innerText = labels[card.cat];
-        document.getElementById('card-text').innerText = card.text;
-
-        // Supprimer du deck sauf si catégorie Beverage (2)
-        if(card.cat !== 2) {
-            gameDeck.splice(idx, 1);
-        }
+        renderEditor();
     }
 </script>
+
 </body>
 </html>
