@@ -85,8 +85,8 @@
 
 <div id="modal-rules" class="modal"><div class="modal-content">
     <h2>Règles</h2><div style="text-align:left; font-size:0.9rem; line-height:1.5;">
-    <p><b style="color:var(--cat1)">⚖️ Accusation :</b> Avocat défend (30s). Vote groupe. Perdant boit double.</p>
-    <p><b style="color:var(--cat2)">🍷 Beverage :</b> Les cartes rouges ne sortent jamais du deck.</p>
+    <p><b style="color:var(--cat1)">⚖️ Avocat du Diable :</b> Si une accusation vous semble injustifié ou si l'envie vous vient, défendez l'accusé. Attention ! si votre plaidoirie échoue, vous buvez avec l'accusé</p>
+    <p><b style="color:var(--cat2)">🍷 Breuvage :</b> Les cartes rouges ne sortent jamais du deck.</p>
     </div><button class="btn-main" onclick="toggleModal('modal-rules', false)">RETOUR</button>
 </div></div>
 
@@ -132,14 +132,14 @@
 
     const allRoles = [
         { name: "La D", uses: 2, desc: "Sers un shot à qui tu veux (2 utilisations)." },
-        { name: "La Zoz", uses: 0, desc: "Choisis un partenaire lié. Pas de boissons mutuelles." },
-        { name: "La Sainte Marie", uses: 3, desc: "Trouve les Zoz (3 chances). Succès = Ils boivent." },
+        { name: "La Zoz", uses: 0, desc: "Choisis deux personnes (dont toi-même si tu le désir), ces personnes sont en Crush, ils ne doivent pas se distribuer de boisson mutuellement. Petit + si tu trouve le Opps : il boit un shot, tu as deux chances pour le trouver, à chaque erreur tu prend un shot" },
+        { name: "La Sainte Marie", uses: 3, desc: "Trouve les Crush désignés par la Zoz (3 chances). Succès = Ils boivent 1 shot chacun. 1er Echec = 4 gorgées. 2eme Echec = 1 shot. 3eme Echec = 2 shot " },
         { name: "L'Aveugle", uses: 2, desc: "Sers un verre dosé à l'aveugle (2 utilisations)." },
-        { name: "Cloche Brésilienne", uses: 2, desc: "Annule une boisson (1x sur soi, 1x sur autrui)." },
+        { name: "La Cloche Brésilienne", uses: 2, desc: "Annule une boisson (1xmax sur soi, 2 utilisations totales)." },
         { name: "Le Cacapitaine", uses: 2, desc: "Change le destinataire d'un verre/shot (2 utilisations)." },
-        { name: "Le Opps", uses: 0, desc: "Tu connais les Zoz. Aide la Sainte Marie à les trouver." },
-        { name: "Paf", uses: 2, desc: "Prends le contrôle d'une distribution Beverage (2 utilisations)." },
-        { name: "Le Kamikaze", uses: 1, desc: "TIC-TAC (10s pour finir son verre). Échec = Tu bois cul-sec." }
+        { name: "Le Opps", uses: 0, desc: "Tu connais les Crush attribué par la Zoz. Aide la Sainte Marie à les trouver. Mais sois discret si la Zoz te trouve, tu prend un shot (interdit de chuchoter si la sainte est à coté" },
+        { name: "Paf", uses: 2, desc: "Prends le contrôle d'une distribution Breuvage (2 utilisations)." },
+        { name: "Le Kamikaze", uses: 1, desc: "Une fois dans la partie tu peux pointer quelqu'un du doigt et dire TIC-TAC. Cette personne a 10s pour finir son verre. Succès = 1 shot pour la personne. Échec = Tu bois cul-sec." }
     ];
 
     const baseCards = [
@@ -336,7 +336,7 @@
     function createCardElement(d) {
         const el = document.createElement('div');
         el.className = `game-card cat-${d.cat}`;
-        const lbls = ["", "L'ACCUSATION", "BEVERAGE", "LE PACTE DU DIABLE", "DÉFI FLASH"];
+        const lbls = ["", "L'ACCUSATION", "BREUVAGE", "LE PACTE DU DIABLE", "DÉFI FLASH"];
         el.innerHTML = `<div class="cat-label">${lbls[d.cat]}</div><div style="font-size:1.3rem;font-weight:700">${d.text}</div>`;
         return el;
     }
@@ -368,3 +368,4 @@
 </script>
 </body>
 </html>
+
