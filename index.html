@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Tribunal des Mythes - Master Edition</title>
+    <title>Le Tribunal des Mythes - Rôles Illustrés</title>
     <style>
         :root {
             --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc; --accent: #6366f1;
-            --cat1: #3b82f6; --cat2: #ef4444; --cat3: #a855f7; --cat4: #10b981;
+            --role-color: #818cf8; --cat1: #3b82f6; --cat2: #ef4444; --cat3: #a855f7; --cat4: #10b981;
         }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
@@ -20,35 +20,45 @@
 
         /* Cartes & Animation Slide */
         #card-container { position: relative; width: 85vw; max-width: 320px; height: 110vw; max-height: 460px; margin: 20px 0; perspective: 1200px; }
-        .game-card { 
+        .game-card, .role-card-ui { 
             position: absolute; inset: 0; background: var(--card-bg); border-radius: 30px; 
             border: 6px solid var(--text); display: flex; flex-direction: column; 
-            justify-content: center; padding: 30px; text-align: center;
+            padding: 30px; text-align: center;
             transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s;
             box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            box-sizing: border-box;
         }
+        .game-card { justify-content: center; }
+        
         .slide-out { transform: translateY(-130%) rotate(-10deg); opacity: 0; }
         .slide-in { transform: translateY(100%) scale(0.9); opacity: 0; }
         .active-card { transform: translateY(0) scale(1); opacity: 1; }
 
         .cat-label { font-size: 0.9rem; font-weight: 900; letter-spacing: 2px; margin-bottom: 25px; text-transform: uppercase; }
-        
-        /* Harmonisation Couleurs Titre + Bordure */
         .cat-1 { border-color: var(--cat1); } .cat-1 .cat-label { color: var(--cat1); }
         .cat-2 { border-color: var(--cat2); } .cat-2 .cat-label { color: var(--cat2); }
         .cat-3 { border-color: var(--cat3); } .cat-3 .cat-label { color: var(--cat3); }
         .cat-4 { border-color: var(--cat4); } .cat-4 .cat-label { color: var(--cat4); }
 
+        /* Design de la Carte de Rôle */
+        .role-card-ui { border-color: var(--accent); position: relative; }
+        .role-name { color: var(--role-color); font-size: 1.8rem; font-weight: 800; text-transform: uppercase; margin: 0 0 10px 0; }
+        .role-desc { font-size: 1rem; color: #cbd5e1; line-height: 1.4; margin-bottom: 20px; }
+        .role-image-placeholder { 
+            flex: 1; margin: 10px 0; border: 2px dashed rgba(129, 140, 248, 0.3); 
+            border-radius: 15px; display: flex; align-items: center; justify-content: center;
+            background: rgba(15, 23, 42, 0.3); color: rgba(129, 140, 248, 0.5); font-style: italic; font-size: 0.8rem;
+        }
+
         /* Overlays & Modals */
         #overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
-        .role-reveal-box { width: 90vw; max-width: 360px; padding: 40px 25px; background: var(--card-bg); border-radius: 35px; border: 4px solid var(--accent); }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 500; align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: var(--card-bg); padding: 25px; border-radius: 25px; width: 100%; max-width: 400px; border: 1px solid #475569; }
 
-        /* Boutons & Inputs */
+        /* Boutons */
         .btn-main { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 16px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1.1rem; box-shadow: 0 8px 15px rgba(99, 102, 241, 0.3); }
         .zoz-btn { background: #334155; color: white; border: 2px solid transparent; padding: 12px; margin: 6px; border-radius: 12px; width: 44%; cursor: pointer; font-weight: bold; }
-        .zoz-btn.selected { border-color: var(--accent); background: #475569; box-shadow: 0 0 10px var(--accent); }
+        .zoz-btn.selected { border-color: var(--accent); background: #475569; }
         .use-btn { background: var(--cat4); border: none; color: white; padding: 6px 10px; border-radius: 6px; font-size: 0.7rem; margin: 2px; }
         .use-btn.used { background: #475569; text-decoration: line-through; opacity: 0.5; }
         input[type="text"] { width: 100%; padding: 15px; border-radius: 12px; border: none; background: #1e293b; color: white; margin-bottom: 15px; font-size: 1rem; box-sizing: border-box; }
@@ -68,7 +78,7 @@
 </div>
 
 <div id="config-tab" class="tab-content">
-    <h2>Sélection des Rôles</h2>
+    <h2>Rôles de la session</h2>
     <div id="role-selector-list" style="width: 100%; max-width: 320px; margin-bottom: 20px;"></div>
     <button class="btn-main" onclick="validateAndStart()">LANCER LA RÉVÉLATION</button>
 </div>
@@ -101,14 +111,20 @@
 
 <div id="overlay">
     <div id="transition-screen">
-        <h2 id="next-player-name"></h2>
+        <h2 id="next-player-name" style="font-size: 1.8rem; margin-bottom: 20px;"></h2>
         <button class="btn-main" onclick="revealRoleNow()">DÉVOILER MON RÔLE</button>
     </div>
-    <div id="role-screen" class="role-reveal-box" style="display:none;">
-        <h2 id="overlay-player" style="opacity:0.5; font-size:0.9rem;"></h2>
-        <h1 id="overlay-role"></h1>
-        <p id="overlay-desc" style="font-size:1.1rem; line-height:1.4;"></p>
-        <div id="zoz-choice-container" style="display:none; flex-wrap:wrap; justify-content:center; margin-top:15px;"></div>
+    
+    <div id="role-screen" class="role-card-ui" style="display:none;">
+        <div id="overlay-player" style="font-size: 0.8rem; opacity: 0.5; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;"></div>
+        <div id="overlay-role" class="role-name"></div>
+        <div id="overlay-desc" class="role-desc"></div>
+        
+        <div class="role-image-placeholder">
+            Illustration à venir...
+        </div>
+        
+        <div id="zoz-choice-container" style="display:none; flex-wrap:wrap; justify-content:center; margin-bottom:10px;"></div>
         <button id="overlay-btn" class="btn-main" onclick="closeOverlay()">C'EST COMPRIS</button>
     </div>
 </div>
@@ -122,62 +138,26 @@
     let isAnimating = false;
 
     const allRoles = [
-        { name: "La D", uses: 2, desc: "À n’importe quel moment, tu peux servir un shot à qui tu le veux (2 utilisations)." },
-        { name: "La Zoz", uses: 0, desc: "Choisis un partenaire. Vous ne devez jamais vous distribuer de boissons." },
-        { name: "La Sainte Marie", uses: 3, desc: "Trouve les Zoz (3 chances). Si tu trouves, les amoureux boivent un shot chacun." },
+        { name: "La D", uses: 2, desc: "Sers un shot à qui tu veux (2 utilisations)." },
+        { name: "La Zoz", uses: 0, desc: "Choisis un partenaire lié. Pas de boissons entre vous." },
+        { name: "La Sainte Marie", uses: 3, desc: "Trouve les Zoz (3 chances). Succès = Ils boivent." },
         { name: "L'Aveugle", uses: 2, desc: "Sers un verre dosé à l'aveugle (2 utilisations)." },
-        { name: "Cloche Brésilienne", uses: 2, desc: "Annule une boisson pour toi ou un autre (1x sur soi, 1x sur autrui)." },
+        { name: "Cloche Brésilienne", uses: 2, desc: "Annule une boisson (1x sur soi, 1x sur autrui)." },
         { name: "Le Cacapitaine", uses: 2, desc: "Change le destinataire d'un verre/shot (2 utilisations)." },
-        { name: "Le Opps", uses: 0, desc: "Tu connais les Zoz. Aide la Sainte Marie à les trouver sans te faire griller." },
-        { name: "Paf", uses: 2, desc: "Sur un 'distribue...', dis PAF et distribue toi-même les gorgées (2 utilisations)." },
-        { name: "Le Kamikaze", uses: 1, desc: "Dis TIC-TAC (10s pour finir son verre). Échec = Tu bois cul-sec." }
+        { name: "Le Opps", uses: 0, desc: "Aide la Sainte Marie sans te faire griller." },
+        { name: "Paf", uses: 2, desc: "Prends le contrôle d'une distribution (2 utilisations)." },
+        { name: "Le Kamikaze", uses: 1, desc: "TIC-TAC (10s pour finir). Échec = Tu bois cul-sec." }
     ];
 
     const duplicatables = ["La D", "L'Aveugle", "Cloche Brésilienne", "Le Cacapitaine", "Paf", "Le Kamikaze"];
 
     const baseCards = [
-        // ACCUSATIONS (Bleu)
-        {cat:1, text:"Qui est le plus susceptible de texter son ex après 3 verres ?"},
-        {cat:1, text:"Qui est le plus mauvais conducteur du groupe ?"},
-        {cat:1, text:"Qui pourrait participer à une émission de télé-réalité ?"},
-        {cat:1, text:"L'Infiltré : Qui s'incrusterait à un mariage sans être invité ?"},
-        {cat:1, text:"Le Mytho : Qui ment pour se sortir d'une galère ?"},
-        {cat:1, text:"Le Survivor : Qui survivrait le plus longtemps ?"},
-        {cat:1, text:"L'innocent : Qui mourrait en premier dans un film d'horreur ?"},
-        {cat:1, text:"Mauvais Plan : Tatouage regrettable sur un coup de tête ?"},
-        {cat:1, text:"Red Flag : Qui a le pire goût amoureux ?"},
-        {cat:1, text:"Stockholm : Qui tombe amoureux de qui l'ignore ?"},
-        {cat:1, text:"Morphée : Qui disparaît sans prévenir pour dormir ?"},
-        {cat:1, text:"Le Fugitif : Qui part avec les pompes d'un autre ?"},
-        // BEVERAGE (Rouge)
-        {cat:2, text:"Bois 2 gorgées"}, {cat:2, text:"Bois 3 gorgées"}, {cat:2, text:"Bois 4 gorgées"},
-        {cat:2, text:"Bois 5 gorgées"}, {cat:2, text:"Bois 1 shot"}, {cat:2, text:"Distribue 2 gorgées"},
-        {cat:2, text:"Distribue 3 gorgées"}, {cat:2, text:"Distribue 4 gorgées"}, {cat:2, text:"Distribue 5 gorgées"},
+        {cat:1, text:"Qui texterait son ex après 3 verres ?"},
+        {cat:1, text:"Qui est le plus mauvais conducteur ?"},
+        {cat:2, text:"Bois 3 gorgées"},
         {cat:2, text:"Distribue 1 shot"},
-        // PACTES (Violet)
-        {cat:3, text:"(Désigne 3) : Vacances, Business, ou panne sur l'autoroute ?"},
-        {cat:3, text:"(Désigne 2) : Sauve l'un d'un incendie, l'autre perd ses cheveux."},
-        {cat:3, text:"(Désigne 3) : Île déserte. Mariage, une nuit, ou sacrifice ?"},
-        {cat:3, text:"(Désigne 3) : Prêt 1000€, 5 blagues limites, ou se casser la gueule ?"},
-        {cat:3, text:"(Désigne 3) : Kiss, Marry, Fuck (le groupe choisit)."},
-        {cat:3, text:"Le Swap : Échange ta famille avec l'un et ton compte avec l'autre."},
-        {cat:3, text:"Les complices : Classe du complice de crime au traître."},
-        // DEFIS (Vert)
-        {cat:4, text:"L'idiot : Chaque réponse à une question = boire."},
-        {cat:4, text:"Le fou : Désigne 2 personnes, elles échangent leurs verres."},
-        {cat:4, text:"Le Sommelier : Remplis le prochain verre d'un joueur (doses libres)."},
-        {cat:4, text:"L'ivrogne : Les autres dosent ton prochain verre."},
-        {cat:4, text:"Le Muet : Silence jusqu'à ton prochain tour."},
-        {cat:4, text:"Cascade : Tout le monde boit, tu termines (+2 gorgées)."},
-        {cat:4, text:"Le Miroir : Choisis un jumeau. Verres liés."},
-        {cat:4, text:"Le Sniper : POUCE ! Le dernier boit 3."},
-        {cat:4, text:"Le Try Harder : POUCE ! Le premier boit 3."},
-        {cat:4, text:"Le Roi : Instaure une règle jusqu'à la fin."},
-        {cat:4, text:"Le Géolier : Lie 2 personnes (elles boivent ensemble)."},
-        {cat:4, text:"Le Kamikaze : Shot pour forcer 2 personnes à finir leur verre."},
-        {cat:4, text:"Le T-Rex : Coudes collés au corps. Erreur = 2 gorgées."},
-        {cat:4, text:"Le Maître des Prénoms : 'Chef' ou 'Champion' obligatoire."},
-        {cat:4, text:"Le Vote Blanc : Plus de vote lors des plaidoiries."}
+        {cat:3, text:"Swap : Échange ta famille avec l'un et ton compte avec l'autre."},
+        {cat:4, text:"Sniper : POUCE ! Le dernier boit 3."}
     ];
 
     function registerPlayer() {
@@ -186,7 +166,7 @@
     }
 
     function renderNames() {
-        document.getElementById('list-names').innerHTML = players.map(p => `<span class="player-tag" style="background:#334155;padding:8px 12px;border-radius:10px;">${p}</span>`).join('');
+        document.getElementById('list-names').innerHTML = players.map(p => `<span style="background:#334155;padding:8px 12px;border-radius:10px;font-size:0.85rem;">${p}</span>`).join('');
         document.getElementById('config-btn').style.display = players.length >= 2 ? 'block' : 'none';
     }
 
@@ -204,18 +184,15 @@
     function validateAndStart() {
         let selected = [];
         allRoles.forEach((r, i) => { if(document.getElementById(`role-${i}`).checked) selected.push({...r, currentUses:0}); });
-        
         let rolesToAssign = [...selected].sort(() => 0.5 - Math.random()).slice(0, players.length);
         while(rolesToAssign.length < players.length) {
             let dup = {...allRoles.find(r => duplicatables.includes(r.name))};
             rolesToAssign.push({...dup, currentUses: 0});
         }
-
         let finalMapping = new Array(players.length).fill(null);
         let pIdx = Array.from({length: players.length}, (_, i) => i);
         let zoz = rolesToAssign.find(r => r.name === "La Zoz");
         let opps = rolesToAssign.find(r => r.name === "Le Opps");
-
         if(zoz && opps) {
             let zIdx = Math.floor(Math.random() * (players.length - 1));
             finalMapping[zIdx] = zoz; rolesToAssign.splice(rolesToAssign.indexOf(zoz), 1);
@@ -225,11 +202,9 @@
             finalMapping[oIdx] = opps; rolesToAssign.splice(rolesToAssign.indexOf(opps), 1);
             pIdx.splice(pIdx.indexOf(oIdx), 1);
         }
-
         rolesToAssign.sort(() => 0.5 - Math.random());
         pIdx.forEach((idx, i) => finalMapping[idx] = rolesToAssign[i]);
         players.forEach((p, i) => rolesData[p] = finalMapping[i]);
-
         currentIdx = 0;
         document.getElementById('overlay').style.display = 'flex';
         prepareTransition();
@@ -258,15 +233,15 @@
     function prepareTransition() {
         document.getElementById('role-screen').style.display = 'none';
         document.getElementById('transition-screen').style.display = 'flex';
-        document.getElementById('next-player-name').innerText = "Au tour de : " + players[currentIdx];
+        document.getElementById('next-player-name').innerText = "À ton tour, " + players[currentIdx];
     }
 
     function revealRoleNow() {
         const name = players[currentIdx];
         const data = rolesData[name];
         document.getElementById('transition-screen').style.display = 'none';
-        document.getElementById('role-screen').style.display = 'block';
-        document.getElementById('overlay-player').innerText = name;
+        document.getElementById('role-screen').style.display = 'flex';
+        document.getElementById('overlay-player').innerText = "Rôle de " + name;
         document.getElementById('overlay-role').innerText = data.name;
         document.getElementById('overlay-desc').innerText = data.desc;
         const zozDiv = document.getElementById('zoz-choice-container');
@@ -276,7 +251,7 @@
             zozDiv.style.display = "flex";
             zozDiv.innerHTML = players.map(p => `<button class="zoz-btn" id="zoz-${p}" onclick="selectZoz('${p}')">${p}</button>`).join('');
         } else if(data.name === "Le Opps") {
-            document.getElementById('overlay-desc').innerText += `\n\nLES ZOZ SONT : ${zozPartners.join(" et ")}`;
+            document.getElementById('overlay-desc').innerText += `\n\nZOZ : ${zozPartners.join(" et ")}`;
         }
     }
 
