@@ -3,322 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Tribunal des Mythes</title>
+    <title>Le Tribunal - Rôles Secrets</title>
     <style>
         :root {
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text: #f8fafc;
-            --accent: #6366f1;
+            --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc; --accent: #6366f1;
             --cat1: #3b82f6; --cat2: #ef4444; --cat3: #a855f7; --cat4: #10b981;
         }
-
-        body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        nav {
-            display: flex;
-            background: #1e293b;
-            padding: 5px;
-            justify-content: space-around;
-            border-bottom: 1px solid #334155;
-            z-index: 10;
-        }
-
-        nav button {
-            background: none; border: none; color: #94a3b8;
-            font-weight: bold; padding: 12px; cursor: pointer;
-        }
-
-        nav button.active { color: var(--text); border-bottom: 2px solid var(--accent); }
-
-        .tab-content { display: none; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; flex: 1; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        .tab-content { display: none; flex-direction: column; align-items: center; padding: 20px; flex: 1; overflow-y: auto; }
         .tab-content.active { display: flex; }
 
-        /* Écran d'accueil */
-        .setup-section { width: 100%; max-width: 400px; text-align: center; }
-        .btn-launch {
-            background: var(--accent); color: white; border: none;
-            padding: 15px 30px; border-radius: 12px; font-weight: bold;
-            font-size: 1.1rem; cursor: pointer; margin-bottom: 25px; width: 100%;
+        .btn-main { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
+        input { width: 80%; padding: 12px; border-radius: 8px; border: none; background: #1e293b; color: white; margin-bottom: 10px; }
+
+        /* Full screen overlay pour les rôles */
+        #overlay {
+            display: none; position: fixed; inset: 0; background: var(--bg); z-index: 100;
+            flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center;
         }
 
-        .input-group { display: flex; gap: 8px; margin-bottom: 15px; }
-        input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: white; }
-
-        .player-item {
-            background: #334155; padding: 10px 15px; border-radius: 8px;
-            margin: 5px 0; display: flex; justify-content: space-between; align-items: center;
+        .role-card {
+            width: 80vw; max-width: 300px; padding: 40px 20px;
+            background: var(--card-bg); border-radius: 25px; border: 4px solid var(--accent);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
         }
 
-        /* Écran de Jeu */
-        #game-view { display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; }
-        
-        .game-header { display: flex; gap: 10px; margin-bottom: 15px; width: 100%; max-width: 320px; }
-        .btn-small { background: #334155; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; flex: 1; }
+        .player-tag { background: #334155; padding: 8px 15px; border-radius: 20px; margin: 5px; display: inline-block; }
 
-        .player-turn-display { font-size: 1.2rem; font-weight: bold; color: var(--accent); margin-bottom: 10px; }
-
+        /* Game Card */
         .card {
-            width: 80vw; max-width: 320px; height: 120vw; max-height: 480px;
+            width: 80vw; max-width: 320px; height: 110vw; max-height: 450px;
             background: var(--card-bg); border-radius: 25px; border: 5px solid var(--text);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 25px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            transition: transform 0.2s; position: relative;
+            display: flex; flex-direction: column; justify-content: center; padding: 25px;
+            text-align: center; position: relative; margin: 20px 0;
         }
-
-        .card-cat { position: absolute; top: 20px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem; opacity: 0.8; }
-        .card-text { font-size: 1.4rem; font-weight: 600; line-height: 1.3; }
-
-        /* Editeur */
-        .editor-card { background: #1e293b; padding: 10px; border-radius: 8px; margin: 5px 0; width: 100%; display: flex; justify-content: space-between; font-size: 0.8rem; border-left: 4px solid var(--text); }
-
-        /* Modal Joueurs */
-        #player-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: center;
-        }
-
-        .cat-1 { border-color: var(--cat1); color: var(--cat1); }
-        .cat-2 { border-color: var(--cat2); color: var(--cat2); }
-        .cat-3 { border-color: var(--cat3); color: var(--cat3); }
-        .cat-4 { border-color: var(--cat4); color: var(--cat4); }
-        .card { color: var(--text) !important; }
     </style>
 </head>
 <body>
 
-<nav id="main-nav">
-    <button onclick="showTab('tab-setup')" id="nav-setup" class="active">PARTIE</button>
-    <button onclick="showTab('tab-rules')">RÈGLES</button>
-    <button onclick="showTab('tab-editor')">CARTES</button>
-</nav>
-
-<div id="tab-setup" class="tab-content active">
-    <div id="setup-controls" class="setup-section">
-        <button class="btn-launch" onclick="launchGame()">LANCER LA PARTIE</button>
-        <h3>Nom des joueurs</h3>
-        <div class="input-group">
-            <input type="text" id="player-name" placeholder="Ajouter un nom...">
-            <button onclick="addPlayer()" style="background:var(--accent); border:none; color:white; padding:0 15px; border-radius:8px;">+</button>
-        </div>
-        <div id="list-players-setup"></div>
-    </div>
-
-    <div id="game-view">
-        <div class="game-header">
-            <button class="btn-small" onclick="quitGame()" style="background:#ef4444;">FIN DE PARTIE</button>
-            <button class="btn-small" onclick="togglePlayerModal(true)">👤 JOUEURS</button>
-        </div>
-        <div class="player-turn-display">C'est le tour de : <span id="current-player-name">?</span></div>
-        <div id="active-card" class="card">
-            <div id="active-cat" class="card-cat">Catégorie</div>
-            <div id="active-text" class="card-text">Appuyez pour piocher</div>
-        </div>
-        <button class="btn-launch" onclick="drawNextCard()" style="margin-top: 20px;">PIOCHER</button>
+<div id="setup-tab" class="tab-content active">
+    <h1>Le Tribunal</h1>
+    <p>Entrez un prénom pour découvrir votre rôle</p>
+    <input type="text" id="p-name" placeholder="Ton prénom...">
+    <button class="btn-main" onclick="registerPlayer()">AJOUTER & VOIR RÔLE</button>
+    
+    <div id="players-ready" style="margin-top:30px; text-align:center;">
+        <h3>Joueurs inscrits :</h3>
+        <div id="list-names"></div>
+        <button id="start-btn" class="btn-main" style="display:none; background:var(--cat4);" onclick="startFullReveal()">LANCER LA PARTIE</button>
     </div>
 </div>
 
-<div id="tab-rules" class="tab-content">
-    <h2>Règles du Jeu</h2>
-    <div style="text-align:left; max-width:350px;">
-        <p><strong>1. Tour de rôle :</strong> Le jeu désigne un joueur à chaque carte. C'est lui qui doit répondre ou effectuer le défi.</p>
-        <p><strong>2. L'Avocat :</strong> Sur les Accusations (bleu) et Pactes (violet), un joueur peut défendre l'accusé. Votez ensuite. Si l'avocat perd, l'avocat ET l'accusé boivent double.</p>
-        <p><strong>3. Cartes uniques :</strong> Une carte tirée ne revient plus, sauf les cartes Boissons (rouges).</p>
+<div id="game-tab" class="tab-content">
+    <div id="turn-info" style="font-weight:bold; color:var(--accent);"></div>
+    <div id="main-card" class="card">
+        <div id="c-cat" style="position:absolute; top:20px; width:100%; text-align:center; font-size:0.8rem; font-weight:bold; opacity:0.6;"></div>
+        <div id="c-text" style="font-size:1.4rem; font-weight:bold;"></div>
     </div>
+    <button class="btn-main" onclick="drawCard()">PIOCHER</button>
+    <button onclick="location.reload()" style="background:none; border:none; color:gray; margin-top:15px; cursor:pointer;">Fin de partie</button>
 </div>
 
-<div id="tab-editor" class="tab-content">
-    <h3>Gestion des Cartes</h3>
-    <div class="input-group" style="flex-direction:column; width:100%;">
-        <select id="edit-cat" style="padding:10px; border-radius:8px; background:#1e293b; color:white;">
-            <option value="1">Accusation</option>
-            <option value="2">Beverage</option>
-            <option value="3">Pacte du Diable</option>
-            <option value="4">Défi Flash</option>
-        </select>
-        <textarea id="edit-text" placeholder="Texte de la carte..." style="padding:10px; margin-top:5px; border-radius:8px; background:#1e293b; color:white;"></textarea>
-        <button onclick="addCustomCard()" style="background:var(--cat4); border:none; color:white; padding:10px; margin-top:5px; border-radius:8px;">AJOUTER +</button>
-    </div>
-    <div id="editor-list" style="width:100%; margin-top:20px;"></div>
-</div>
-
-<div id="player-modal">
-    <div style="background:var(--card-bg); padding:25px; border-radius:20px; width:80%; max-width:300px; text-align:center;">
-        <h3>Joueurs inscrits</h3>
-        <div id="modal-list-players"></div>
-        <button class="btn-small" onclick="togglePlayerModal(false)" style="margin-top:20px; width:100%;">FERMER</button>
+<div id="overlay">
+    <div id="overlay-content" class="role-card">
+        <h2 id="overlay-player">Joueur</h2>
+        <h1 id="overlay-role" style="color:var(--accent);">Rôle</h1>
+        <p id="overlay-desc"></p>
+        <div id="zoz-choice" style="display:none; margin-top:15px;">
+            <p>Choisis ton partenaire :</p>
+            <div id="zoz-list"></div>
+        </div>
+        <button id="overlay-btn" class="btn-main" onclick="closeOverlay()">OK</button>
     </div>
 </div>
 
 <script>
-    // --- DATA ---
-    let defaultCards = [
-        { cat: 1, text: "Qui est le plus susceptible de texter son ex après 3 verres ?" },
-        { cat: 1, text: "Qui est le plus mauvais conducteur du groupe ?" },
-        { cat: 1, text: "Qui pourrait participer à une émission de télé-réalité ?" },
-        { cat: 1, text: "L'Infiltré : Qui s'incrusterait à un mariage sans être invité ?" },
-        { cat: 1, text: "Le Mytho : Qui ment avec un calme olympien pour se sortir d'une galère ?" },
-        { cat: 1, text: "Le Survivor : Qui survivrait le plus longtemps dans un film d'horreur ?" },
-        { cat: 1, text: "L'innocent : Qui mourrait en premier dans un film d'horreur ?" },
-        { cat: 1, text: "Le Mauvais Plan : Qui finirait avec un tatouage qu'il regrettera toute sa vie ?" },
-        { cat: 1, text: "Le Red Flag : Qui a le pire goût en matière de fréquentation amoureuse ?" },
-        { cat: 1, text: "Le Syndrome de Stockholm : Qui tomberait amoureux de quelqu'un qui ne le calcule pas ?" },
-        { cat: 1, text: "Morphée : Qui disparaît de la soirée pour dormir sans prévenir ?" },
-        { cat: 1, text: "Le Fugitif : Qui part avec les chaussures d'un autre par erreur ?" },
-        
-        { cat: 2, text: "Bois 2 gorgées" }, { cat: 2, text: "Bois 3 gorgées" }, { cat: 2, text: "Bois 4 gorgées" },
-        { cat: 2, text: "Bois 5 gorgées" }, { cat: 2, text: "Bois 1 shot" }, { cat: 2, text: "Distribue 2 gorgées" },
-        { cat: 2, text: "Distribue 3 gorgées" }, { cat: 2, text: "Distribue 4 gorgées" }, { cat: 2, text: "Distribue 5 gorgées" },
-        { cat: 2, text: "Distribue 1 shot" },
+    let players = [];
+    let rolesData = {};
+    let zozPartners = [];
+    let rolePool = ["La D", "La Zoz", "La Sainte Marie", "L'Aveugle", "Cloche Brésilienne", "Le Cacapitaine", "Le Opps", "Paf", "Le Kamikaze"];
+    let deck = [];
+    let currentIdx = 0;
+    let revealMode = "light"; // "light" au début, "full" au lancement
 
-        { cat: 3, text: "(Désigne 3 personnes) : Vacances, Business, ou abandon sur l'autoroute ?" },
-        { cat: 3, text: "(Désigne 2 personnes) : Sauve-en une d'un incendie, l'autre perd tous ses cheveux." },
-        { cat: 3, text: "(Désigne 3 personnes) : Île déserte. Mariage, une nuit, ou sacrifice ?" },
-        { cat: 3, text: "(Désigne 3 personnes) : Une te prête 1000€, une dit 5 blagues racistes, une se casse la gueule." },
-        { cat: 3, text: "(Désigne 3 personnes) : Kiss, Marry ou Fuck (Le groupe choisit les acteurs)." },
-        { cat: 3, text: "Le Swap de vie : Échange ta famille avec l'un et ton compte avec l'autre." },
-        { cat: 3, text: "Les complices : Classe 3 personnes : du complice de crime au traître absolu." },
-
-        { cat: 4, text: "L'idiot : Chaque fois que tu réponds à une question tu bois (jusqu'à ton prochain tour)." },
-        { cat: 4, text: "Le fou : Désigne deux personnes, elles doivent échanger leurs verres." },
-        { cat: 4, text: "Le Sommelier : Remplis le prochain verre de la personne de ton choix." },
-        { cat: 4, text: "L'ivrogne : Les autres te font ton prochain verre, dosé comme ils veulent." },
-        { cat: 4, text: "Le Muet : Tu ne dois plus parler jusqu'à ton prochain tour." },
-        { cat: 4, text: "Cascade : Tout le monde boit. Tu décides de la fin, mais tu bois 2 de plus." },
-        { cat: 4, text: "Le Miroir : Choisis un jumeau. S'il boit, tu bois, et inversement." },
-        { cat: 4, text: "Le Sniper : Dis 'POUCE'. Le dernier qui touche son menton boit 3." },
-        { cat: 4, text: "Le try Harder : Dis 'POUCE'. Le PREMIER qui touche son menton boit 3." },
-        { cat: 4, text: "Le roi : Instaure une règle jusqu'à la fin de la partie." },
-        { cat: 4, text: "Le géolier : Lie deux personnes dans une chaîne de boisson." },
-        { cat: 4, text: "Le Kamikaze : Bois un gros shot pour forcer 2 personnes à finir leur verre." },
-        { cat: 4, text: "Le T-Rex : Coudes collés au corps. Erreur = 2 gorgées." },
-        { cat: 4, text: "Le Maître des Prénoms : Appelle tout le monde Chef ou Champion. Erreur = 1." },
-        { cat: 4, text: "Le Vote Blanc : Tu n'as plus le droit de voter lors des plaidoiries." }
+    const cards = [
+        {cat:1, text:"Qui texterait son ex après 3 verres ?"},
+        {cat:1, text:"Qui est le plus mauvais conducteur ?"},
+        {cat:2, text:"Bois 3 gorgées"},
+        {cat:2, text:"Distribue 1 shot"},
+        {cat:3, text:"(Désigne 3) : Vacances, Business, ou panne sur l'autoroute ?"},
+        {cat:4, text:"Le Sniper : POUCE ! Le dernier boit 3."}
+        // ... (Ajoute le reste de ta liste ici)
     ];
 
-    let players = [];
-    let customCards = JSON.parse(localStorage.getItem('tribunalCustom')) || [];
-    let gameDeck = [];
-    let currentPlayerIndex = 0;
+    function registerPlayer() {
+        const name = document.getElementById('p-name').value.trim();
+        if(!name) return;
+        if(rolePool.length === 0) { alert("Plus de rôles disponibles !"); return; }
 
-    // --- NAVIGATION ---
-    function showTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        document.getElementById('nav-'+tabId.split('-')[1]).classList.add('active');
-        if(tabId === 'tab-editor') renderEditor();
+        const role = rolePool.splice(Math.floor(Math.random() * rolePool.length), 1)[0];
+        players.push(name);
+        rolesData[name] = { role: role, desc: getDesc(role) };
+
+        // Affichage light
+        document.getElementById('overlay-player').innerText = name;
+        document.getElementById('overlay-role').innerText = role;
+        document.getElementById('overlay-desc').innerText = "";
+        document.getElementById('overlay-btn').innerText = "OK, JE CACHE";
+        document.getElementById('overlay').style.display = 'flex';
+        
+        document.getElementById('p-name').value = "";
+        renderNames();
     }
 
-    // --- PLAYERS ---
-    function addPlayer() {
-        let name = document.getElementById('player-name').value.trim();
-        if(name) {
-            players.push(name);
-            document.getElementById('player-name').value = "";
-            renderPlayersSetup();
-        }
+    function getDesc(role) {
+        const descs = {
+            "La D": "Sert un shot à qui tu veux (2x).",
+            "La Zoz": "Choisis ton duo. Pas de crasses entre vous.",
+            "La Sainte Marie": "Trouve les Zoz (3 essais). Pénalités si tu rates.",
+            "L'Aveugle": "Sert un verre dosé à l'aveugle (2x).",
+            "Cloche Brésilienne": "Annule une boisson pour toi ou un autre (2x).",
+            "Le Cacapitaine": "Change le destinataire d'un verre/shot (2x).",
+            "Le Opps": "Découvre qui sont les Zoz et aide la Sainte Marie.",
+            "Paf": "Sur un 'Distribue', dis PAF et distribue toi-même (2x).",
+            "Le Kamikaze": "Dis TIC-TAC: 10s pour finir. S'il réussit, tu bois."
+        };
+        return descs[role];
     }
 
-    function renderPlayersSetup() {
-        let container = document.getElementById('list-players-setup');
-        container.innerHTML = players.map((p, i) => `
-            <div class="player-item"><span>${p}</span><span onclick="players.splice(${i},1);renderPlayersSetup()" style="color:#ef4444; font-weight:bold; cursor:pointer;">×</span></div>
-        `).join('');
+    function renderNames() {
+        document.getElementById('list-names').innerHTML = players.map(p => `<span class="player-tag">${p}</span>`).join('');
+        if(players.length >= 5) document.getElementById('start-btn').style.display = 'block';
     }
 
-    function togglePlayerModal(show) {
-        document.getElementById('player-modal').style.display = show ? 'flex' : 'none';
-        document.getElementById('modal-list-players').innerHTML = players.map(p => `<div>${p}</div>`).join('');
+    function startFullReveal() {
+        revealMode = "full";
+        currentIdx = 0;
+        showFullRole();
     }
 
-    // --- GAME LOGIC ---
-    function launchGame() {
-        if(players.length < 2) return alert("Ajoutez au moins 2 joueurs !");
-        gameDeck = [...defaultCards, ...customCards];
-        currentPlayerIndex = 0;
-        document.getElementById('setup-controls').style.display = "none";
-        document.getElementById('main-nav').style.display = "none";
-        document.getElementById('game-view').style.display = "flex";
-        drawNextCard();
-    }
-
-    function quitGame() {
-        if(confirm("Quitter la partie ?")){
-            document.getElementById('setup-controls').style.display = "block";
-            document.getElementById('main-nav').style.display = "flex";
-            document.getElementById('game-view').style.display = "none";
-        }
-    }
-
-    function drawNextCard() {
-        if(gameDeck.length === 0) {
-            alert("Plus de cartes ! Re-mélange du deck.");
-            gameDeck = [...defaultCards, ...customCards];
-        }
-
-        // Tour de rôle
-        document.getElementById('current-player-name').innerText = players[currentPlayerIndex];
-
-        // Pioche
-        let idx = Math.floor(Math.random() * gameDeck.length);
-        let card = gameDeck[idx];
-
-        // Affichage
-        let labels = ["", "Accusation", "Beverage", "Pacte du Diable", "Défi Flash"];
-        let cardEl = document.getElementById('active-card');
-        cardEl.className = `card cat-${card.cat}`;
-        document.getElementById('active-cat').innerText = labels[card.cat];
-        document.getElementById('active-text').innerText = card.text;
-
-        // Retrait sauf si Beverage
-        if(card.cat !== 2) gameDeck.splice(idx, 1);
-
-        // Passer au joueur suivant pour la prochaine carte
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-    }
-
-    // --- EDITOR ---
-    function addCustomCard() {
-        let cat = parseInt(document.getElementById('edit-cat').value);
-        let text = document.getElementById('edit-text').value.trim();
-        if(text) {
-            customCards.push({cat, text});
-            localStorage.setItem('tribunalCustom', JSON.stringify(customCards));
-            document.getElementById('edit-text').value = "";
-            renderEditor();
-        }
-    }
-
-    function renderEditor() {
-        let list = document.getElementById('editor-list');
-        let all = [...defaultCards, ...customCards];
-        list.innerHTML = all.map((c, i) => `
-            <div class="editor-card cat-${c.cat}">
-                <span>${c.text.substring(0, 35)}...</span>
-                <span onclick="deleteCard(${i})" style="color:#ef4444; font-weight:bold; cursor:pointer;">×</span>
-            </div>
-        `).join('');
-    }
-
-    function deleteCard(i) {
-        if(i < defaultCards.length) {
-            defaultCards.splice(i, 1);
+    function showFullRole() {
+        const name = players[currentIdx];
+        const data = rolesData[name];
+        
+        document.getElementById('overlay').style.display = 'flex';
+        document.getElementById('overlay-player').innerText = name;
+        document.getElementById('overlay-role').innerText = data.role;
+        
+        if(data.role === "La Zoz") {
+            document.getElementById('overlay-desc').innerText = "Choisis les deux membres du duo :";
+            document.getElementById('zoz-choice').style.display = 'block';
+            document.getElementById('zoz-list').innerHTML = players.map(p => 
+                `<button class="btn-main" style="font-size:0.8rem; padding:5px;" onclick="selectZoz('${p}')">${p}</button>`
+            ).join('');
+            document.getElementById('overlay-btn').style.display = 'none';
+        } else if(data.role === "Le Opps") {
+            const duo = zozPartners.length > 0 ? zozPartners.join(" et ") : "pas encore désignés";
+            document.getElementById('overlay-desc').innerText = `Les personnes liées sont : ${duo}. Aide la Sainte Marie.`;
+            document.getElementById('zoz-choice').style.display = 'none';
+            document.getElementById('overlay-btn').style.display = 'block';
         } else {
-            customCards.splice(i - defaultCards.length, 1);
-            localStorage.setItem('tribunalCustom', JSON.stringify(customCards));
+            document.getElementById('overlay-desc').innerText = data.desc;
+            document.getElementById('zoz-choice').style.display = 'none';
+            document.getElementById('overlay-btn').style.display = 'block';
         }
-        renderEditor();
+    }
+
+    function selectZoz(pName) {
+        zozPartners.push(pName);
+        if(zozPartners.length === 2) {
+            document.getElementById('zoz-choice').style.display = 'none';
+            document.getElementById('overlay-btn').style.display = 'block';
+            document.getElementById('overlay-desc').innerText = `Duo enregistré : ${zozPartners[0]} & ${zozPartners[1]}`;
+        }
+    }
+
+    function closeOverlay() {
+        document.getElementById('overlay').style.display = 'none';
+        if(revealMode === "full") {
+            currentIdx++;
+            if(currentIdx < players.length) {
+                showFullRole();
+            } else {
+                startGame();
+            }
+        }
+    }
+
+    function startGame() {
+        document.getElementById('setup-tab').classList.remove('active');
+        document.getElementById('game-tab').classList.add('active');
+        deck = [...cards];
+        currentIdx = 0;
+        drawCard();
+    }
+
+    function drawCard() {
+        if(deck.length === 0) deck = [...cards];
+        document.getElementById('turn-info').innerText = "Tour de : " + players[currentIdx];
+        
+        const rIdx = Math.floor(Math.random() * deck.length);
+        const c = deck[rIdx];
+        
+        document.getElementById('c-cat').innerText = ["", "ACCUSATION", "BEVERAGE", "PACTE", "DÉFI"][c.cat];
+        document.getElementById('main-card').style.borderColor = [`var(--text)`, `var(--cat1)`, `var(--cat2)`, `var(--cat3)`, `var(--cat4)`][c.cat];
+        document.getElementById('c-text').innerText = c.text;
+        
+        if(c.cat !== 2) deck.splice(rIdx, 1);
+        currentIdx = (currentIdx + 1) % players.length;
     }
 </script>
-
 </body>
 </html>
