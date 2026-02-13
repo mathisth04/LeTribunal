@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Tribunal - Final</title>
+    <title>Le Tribunal - Final Fix</title>
     <style>
         :root {
             --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc; --accent: #6366f1;
@@ -22,10 +22,8 @@
         .zoz-btn.selected { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
         
         .player-tag { background: #334155; padding: 5px 12px; border-radius: 15px; margin: 3px; display: inline-block; font-size: 0.8rem; }
-        
         .role-option { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 300px; background: #1e293b; padding: 10px; margin: 5px 0; border-radius: 8px; font-size: 0.9rem; }
-        .role-option input { width: auto; margin: 0; }
-
+        
         .game-card { width: 80vw; max-width: 320px; height: 100vw; max-height: 400px; background: var(--card-bg); border-radius: 25px; border: 5px solid var(--text); display: flex; flex-direction: column; justify-content: center; padding: 25px; text-align: center; position: relative; margin: 20px 0; }
     </style>
 </head>
@@ -65,9 +63,9 @@
     </div>
     <div id="role-screen" class="role-card" style="display:none;">
         <h2 id="overlay-player">Joueur</h2>
-        <h1 id="overlay-role" style="color:var(--accent);">Rôle</h1>
+        <h1 id="overlay-role" style="color:var(--accent); margin-bottom:10px;">Rôle</h1>
         <p id="overlay-desc"></p>
-        <div id="zoz-choice" style="display:none; margin-top:15px; flex-wrap:wrap; justify-content:center;"></div>
+        <div id="zoz-choice-container" style="display:none; margin-top:15px; flex-wrap:wrap; justify-content:center;"></div>
         <button id="overlay-btn" class="btn-main" onclick="closeOverlay()">J'AI COMPRIS</button>
     </div>
 </div>
@@ -77,7 +75,6 @@
     let rolesData = {};
     let zozPartners = [];
     let currentIdx = 0;
-    let selectedRoles = [];
     let deck = [];
 
     const allRoles = [
@@ -94,11 +91,7 @@
 
     function registerPlayer() {
         const name = document.getElementById('p-name').value.trim();
-        if(name) {
-            players.push(name);
-            document.getElementById('p-name').value = "";
-            renderNames();
-        }
+        if(name) { players.push(name); document.getElementById('p-name').value = ""; renderNames(); }
     }
 
     function renderNames() {
@@ -112,37 +105,23 @@
         const list = document.getElementById('role-selector-list');
         list.innerHTML = allRoles.map((r, i) => `
             <div class="role-option">
-                <label for="role-${i}">${r.name}</label>
-                <input type="checkbox" id="role-${i}" value="${r.name}" checked>
+                <label>${r.name}</label>
+                <input type="checkbox" id="role-${i}" checked>
             </div>
         `).join('');
     }
 
     function validateAndStart() {
         let pool = [];
-        allRoles.forEach((r, i) => {
-            if(document.getElementById(`role-${i}`).checked) pool.push(r);
-        });
-
-        // Mélange et assure l'unicité des rôles
+        allRoles.forEach((r, i) => { if(document.getElementById(`role-${i}`).checked) pool.push(r); });
         pool = pool.sort(() => 0.5 - Math.random());
         
-        let finalRoles = [];
-        if(pool.length >= players.length) {
-            finalRoles = pool.slice(0, players.length);
-        } else {
-            finalRoles = [...pool];
-            while(finalRoles.length < players.length) {
-                finalRoles.push({name: "Villageois", desc: "Tu n'as pas de pouvoir spécial, bois avec dignité !"});
-            }
+        let finalRoles = pool.slice(0, players.length);
+        while(finalRoles.length < players.length) {
+            finalRoles.push({name: "Villageois", desc: "Tu n'as pas de pouvoir spécial."});
         }
-
-        // Attribution finale
         finalRoles = finalRoles.sort(() => 0.5 - Math.random());
-        rolesData = {};
-        players.forEach((p, i) => {
-            rolesData[p] = finalRoles[i];
-        });
+        players.forEach((p, i) => { rolesData[p] = finalRoles[i]; });
 
         currentIdx = 0;
         zozPartners = [];
@@ -160,11 +139,9 @@
         const name = players[currentIdx];
         const data = rolesData[name];
 
-        // Gestion retardée de l'Opps si Zoz n'a pas encore choisi
         if(data.name === "Le Opps" && zozPartners.length < 2 && Object.values(rolesData).some(r => r.name === "La Zoz")) {
-            alert("L'Opps doit attendre le choix de la Zoz. Tu repasses à la fin !");
-            players.splice(currentIdx, 1);
-            players.push(name);
+            alert("L'Opps doit attendre le choix de la Zoz. Passe le téléphone !");
+            players.push(players.splice(currentIdx, 1)[0]);
             prepareTransition();
             return;
         }
@@ -175,22 +152,13 @@
         document.getElementById('overlay-role').innerText = data.name;
         document.getElementById('overlay-desc').innerText = data.desc;
 
-        // Reset spécifique à l'affichage Zoz
-        const zozDiv = document.getElementById('zoz-choice');
-        zozDiv.style.display = "none";
-        zozDiv.innerHTML = "";
-
         if(data.name === "La Zoz") {
             document.getElementById('overlay-btn').style.display = "none";
+            const zozDiv = document.getElementById('zoz-choice-container');
             zozDiv.style.display = "flex";
-            zozDiv.innerHTML = players.map(p => 
-                `<button class="zoz-btn" id="zoz-${p}" onclick="selectZoz('${p}')">${p}</button>`
-            ).join('');
+            zozDiv.innerHTML = players.map(p => `<button class="zoz-btn" id="zoz-${p}" onclick="selectZoz('${p}')">${p}</button>`).join('');
         } else if(data.name === "Le Opps") {
             document.getElementById('overlay-desc').innerText += `\n\nLES ZOZ SONT : ${zozPartners.join(" et ")}`;
-            document.getElementById('overlay-btn').style.display = "block";
-        } else {
-            document.getElementById('overlay-btn').style.display = "block";
         }
     }
 
@@ -206,6 +174,13 @@
     }
 
     function closeOverlay() {
+        // --- NETTOYAGE CRITIQUE ---
+        document.getElementById('zoz-choice-container').style.display = "none";
+        document.getElementById('zoz-choice-container').innerHTML = "";
+        document.getElementById('overlay-btn').style.display = "block";
+        document.getElementById('overlay-btn').innerText = "J'AI COMPRIS";
+        // -------------------------
+
         currentIdx++;
         if(currentIdx < players.length) {
             prepareTransition();
@@ -221,15 +196,9 @@
         const cards = [
             {cat:1, text:"Qui texterait son ex après 3 verres ?"},
             {cat:1, text:"Qui est le plus mauvais conducteur ?"},
-            {cat:1, text:"L'Infiltré : Qui s'incrusterait à un mariage ?"},
-            {cat:1, text:"Le Mytho : Qui ment pour se sortir de galère ?"},
-            {cat:1, text:"Le Survivor : Qui survivrait le plus longtemps ?"},
-            {cat:1, text:"L'innocent : Qui mourrait en premier ?"},
             {cat:2, text:"Bois 3 gorgées"}, {cat:2, text:"Distribue 1 shot"},
-            {cat:2, text:"Bois 2 gorgées"}, {cat:2, text:"Bois 4 gorgées"},
             {cat:3, text:"(Désigne 3) : Vacances, Business, ou panne sur l'autoroute ?"},
-            {cat:4, text:"Le Sniper : POUCE ! Le dernier boit 3."},
-            {cat:4, text:"Le Kamikaze : TIC-TAC ! 10s pour finir son verre."}
+            {cat:4, text:"Le Sniper : POUCE ! Le dernier boit 3."}
         ];
         deck = [...cards];
         currentIdx = 0;
