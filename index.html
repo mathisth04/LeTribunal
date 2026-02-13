@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Tribunal - Rôles Modulables</title>
+    <title>Le Tribunal - Final</title>
     <style>
         :root {
             --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc; --accent: #6366f1;
@@ -23,9 +23,10 @@
         
         .player-tag { background: #334155; padding: 5px 12px; border-radius: 15px; margin: 3px; display: inline-block; font-size: 0.8rem; }
         
-        /* Sélecteur de rôles */
         .role-option { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 300px; background: #1e293b; padding: 10px; margin: 5px 0; border-radius: 8px; font-size: 0.9rem; }
         .role-option input { width: auto; margin: 0; }
+
+        .game-card { width: 80vw; max-width: 320px; height: 100vw; max-height: 400px; background: var(--card-bg); border-radius: 25px; border: 5px solid var(--text); display: flex; flex-direction: column; justify-content: center; padding: 25px; text-align: center; position: relative; margin: 20px 0; }
     </style>
 </head>
 <body>
@@ -43,19 +44,18 @@
 
 <div id="config-tab" class="tab-content">
     <h2>Sélection des Rôles</h2>
-    <p style="font-size: 0.8rem; opacity: 0.7;">Choisissez les rôles actifs pour cette partie</p>
-    <div id="role-selector-list" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-        </div>
+    <div id="role-selector-list" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
     <button class="btn-main" onclick="validateAndStart()">LANCER LA RÉVÉLATION</button>
 </div>
 
 <div id="game-tab" class="tab-content">
     <div id="turn-info" style="font-weight:bold; color:var(--accent);"></div>
-    <div id="main-card" style="width: 80vw; max-width: 320px; height: 100vw; max-height: 400px; background: var(--card-bg); border-radius: 25px; border: 5px solid var(--text); display: flex; flex-direction: column; justify-content: center; padding: 25px; text-align: center; position: relative; margin: 20px 0;">
+    <div id="main-card" class="game-card">
         <div id="c-cat" style="position:absolute; top:20px; width:100%; text-align:center; font-size:0.8rem; font-weight:bold; opacity:0.6;"></div>
         <div id="c-text" style="font-size:1.4rem; font-weight:bold;"></div>
     </div>
     <button class="btn-main" onclick="drawCard()">PIOCHER</button>
+    <button onclick="location.reload()" style="background:none; border:none; color:gray; margin-top:20px; font-size:0.8rem; cursor:pointer;">✖ FIN DE PARTIE</button>
 </div>
 
 <div id="overlay">
@@ -78,6 +78,7 @@
     let zozPartners = [];
     let currentIdx = 0;
     let selectedRoles = [];
+    let deck = [];
 
     const allRoles = [
         { name: "La D", desc: "À n’importe quel moment dans la partie, tu peux servir un shot à qui tu le veux (utilisable 2 fois sur 2 personnes différentes)." },
@@ -118,33 +119,33 @@
     }
 
     function validateAndStart() {
-        selectedRoles = [];
+        let pool = [];
         allRoles.forEach((r, i) => {
-            if(document.getElementById(`role-${i}`).checked) selectedRoles.push(r);
+            if(document.getElementById(`role-${i}`).checked) pool.push(r);
         });
 
-        if(selectedRoles.length < players.length) {
-            // Si pas assez de rôles spéciaux, on ajoute des "Villageois"
-            while(selectedRoles.length < players.length) {
-                selectedRoles.push({name: "Villageois", desc: "Tu n'as pas de pouvoir spécial, bois avec dignité !"});
+        // Mélange et assure l'unicité des rôles
+        pool = pool.sort(() => 0.5 - Math.random());
+        
+        let finalRoles = [];
+        if(pool.length >= players.length) {
+            finalRoles = pool.slice(0, players.length);
+        } else {
+            finalRoles = [...pool];
+            while(finalRoles.length < players.length) {
+                finalRoles.push({name: "Villageois", desc: "Tu n'as pas de pouvoir spécial, bois avec dignité !"});
             }
-        } else if (selectedRoles.length > players.length) {
-            // On réduit aléatoirement pour coller au nombre de joueurs
-            selectedRoles = selectedRoles.sort(() => 0.5 - Math.random()).slice(0, players.length);
         }
 
-        assignRolesRandomly();
-    }
-
-    function assignRolesRandomly() {
-        let pool = [...selectedRoles].sort(() => 0.5 - Math.random());
+        // Attribution finale
+        finalRoles = finalRoles.sort(() => 0.5 - Math.random());
         rolesData = {};
         players.forEach((p, i) => {
-            rolesData[p] = pool[i];
+            rolesData[p] = finalRoles[i];
         });
 
-        // Lancement de la révélation
         currentIdx = 0;
+        zozPartners = [];
         document.getElementById('overlay').style.display = 'flex';
         prepareTransition();
     }
@@ -159,11 +160,11 @@
         const name = players[currentIdx];
         const data = rolesData[name];
 
-        // Logique Opps/Zoz décalage
-        if(data.name === "Le Opps" && zozPartners.length < 2 && players.some(p => rolesData[p].name === "La Zoz")) {
-            alert("L'Opps doit attendre que la Zoz ait choisi. On te décale à la fin !");
-            const moved = players.splice(currentIdx, 1)[0];
-            players.push(moved);
+        // Gestion retardée de l'Opps si Zoz n'a pas encore choisi
+        if(data.name === "Le Opps" && zozPartners.length < 2 && Object.values(rolesData).some(r => r.name === "La Zoz")) {
+            alert("L'Opps doit attendre le choix de la Zoz. Tu repasses à la fin !");
+            players.splice(currentIdx, 1);
+            players.push(name);
             prepareTransition();
             return;
         }
@@ -174,14 +175,19 @@
         document.getElementById('overlay-role').innerText = data.name;
         document.getElementById('overlay-desc').innerText = data.desc;
 
+        // Reset spécifique à l'affichage Zoz
+        const zozDiv = document.getElementById('zoz-choice');
+        zozDiv.style.display = "none";
+        zozDiv.innerHTML = "";
+
         if(data.name === "La Zoz") {
             document.getElementById('overlay-btn').style.display = "none";
-            document.getElementById('zoz-choice').style.display = "flex";
-            document.getElementById('zoz-choice').innerHTML = players.map(p => 
+            zozDiv.style.display = "flex";
+            zozDiv.innerHTML = players.map(p => 
                 `<button class="zoz-btn" id="zoz-${p}" onclick="selectZoz('${p}')">${p}</button>`
             ).join('');
         } else if(data.name === "Le Opps") {
-            document.getElementById('overlay-desc').innerText += zozPartners.length ? `\n\nLES ZOZ SONT : ${zozPartners.join(" et ")}` : "";
+            document.getElementById('overlay-desc').innerText += `\n\nLES ZOZ SONT : ${zozPartners.join(" et ")}`;
             document.getElementById('overlay-btn').style.display = "block";
         } else {
             document.getElementById('overlay-btn').style.display = "block";
@@ -196,11 +202,7 @@
             zozPartners.push(pName);
             document.getElementById(`zoz-${pName}`).classList.add('selected');
         }
-        if(zozPartners.length === 2) {
-            document.getElementById('overlay-btn').style.display = "block";
-        } else {
-            document.getElementById('overlay-btn').style.display = "none";
-        }
+        document.getElementById('overlay-btn').style.display = (zozPartners.length === 2) ? "block" : "none";
     }
 
     function closeOverlay() {
@@ -211,55 +213,31 @@
             document.getElementById('overlay').style.display = 'none';
             document.getElementById('config-tab').classList.remove('active');
             document.getElementById('game-tab').classList.add('active');
-            drawCard();
+            startGame();
         }
     }
 
-    // --- LOGIQUE CARTES ---
-    const cards = [
-        {cat:1, text:"Qui texterait son ex après 3 verres ?"},
-        {cat:1, text:"Qui est le plus mauvais conducteur ?"},
-        {cat:1, text:"Qui pourrait faire de la télé-réalité ?"},
-        {cat:1, text:"L'Infiltré : Qui s'incrusterait à un mariage ?"},
-        {cat:1, text:"Le Mytho : Qui ment pour se sortir de galère ?"},
-        {cat:1, text:"Le Survivor : Qui survivrait le plus longtemps ?"},
-        {cat:1, text:"L'innocent : Qui mourrait en premier ?"},
-        {cat:1, text:"Mauvais Plan : Tatouage regretté sur un coup de tête ?"},
-        {cat:1, text:"Red Flag : Qui a le pire goût amoureux ?"},
-        {cat:1, text:"Stockholm : Qui tombe amoureux de qui l'ignore ?"},
-        {cat:1, text:"Morphée : Qui disparaît sans prévenir pour dormir ?"},
-        {cat:1, text:"Le Fugitif : Qui part avec les habits d'un autre ?"},
-        {cat:2, text:"Bois 2 gorgées"}, {cat:2, text:"Bois 3 gorgées"}, {cat:2, text:"Bois 4 gorgées"},
-        {cat:2, text:"Bois 5 gorgées"}, {cat:2, text:"Bois 1 shot"}, {cat:2, text:"Distribue 2 gorgées"},
-        {cat:2, text:"Distribue 3 gorgées"}, {cat:2, text:"Distribue 4 gorgées"}, {cat:2, text:"Distribue 5 gorgées"},
-        {cat:2, text:"Distribue 1 shot"},
-        {cat:3, text:"(Désigne 3) : Vacances, Business, ou panne sur l'autoroute ?"},
-        {cat:3, text:"(Désigne 2) : Sauve l'un d'un incendie, l'autre perd ses cheveux."},
-        {cat:3, text:"(Désigne 3) : Île déserte. Mariage, une nuit, ou sacrifice ?"},
-        {cat:3, text:"(Désigne 3) : Prêt 1000€, blague raciste, se casser la gueule."},
-        {cat:3, text:"(Désigne 3) : Kiss, Marry ou Fuck (Groupe choisit les acteurs)."},
-        {cat:3, text:"Swap : Échange ta famille avec l'un et ton compte avec l'autre."},
-        {cat:3, text:"Complices : Classe 3 personnes de l'alibi au traître."},
-        {cat:4, text:"L'idiot : Chaque réponse = boire (jusqu'au prochain tour)."},
-        {cat:4, text:"Le fou : Deux personnes échangent leurs verres."},
-        {cat:4, text:"Sommelier : Remplis le verre d'un ami."},
-        {cat:4, text:"Ivrogne : On te fait ton prochain verre."},
-        {cat:4, text:"Le Muet : Silence jusqu'au prochain tour."},
-        {cat:4, text:"Cascade : Tout le monde boit, tu termines (+2)."},
-        {cat:4, text:"Miroir : Choisis un jumeau. Verres liés."},
-        {cat:4, text:"Sniper : POUCE ! Le dernier boit 3."},
-        {cat:4, text:"Try Harder : POUCE ! Le premier boit 3."},
-        {cat:4, text:"Le Roi : Instaure une règle."},
-        {cat:4, text:"Geôlier : Lie deux personnes."},
-        {cat:4, text:"Kamikaze : Shot pour forcer 2 verres finis. Sinon tu bois."},
-        {cat:4, text:"T-Rex : Coudes au corps. Erreur = 2."},
-        {cat:4, text:"Prénoms : 'Chef' ou 'Champion' obligatoire."},
-        {cat:4, text:"Vote Blanc : Interdiction de voter plaidoirie."}
-    ];
-    let deck = [...cards];
+    function startGame() {
+        const cards = [
+            {cat:1, text:"Qui texterait son ex après 3 verres ?"},
+            {cat:1, text:"Qui est le plus mauvais conducteur ?"},
+            {cat:1, text:"L'Infiltré : Qui s'incrusterait à un mariage ?"},
+            {cat:1, text:"Le Mytho : Qui ment pour se sortir de galère ?"},
+            {cat:1, text:"Le Survivor : Qui survivrait le plus longtemps ?"},
+            {cat:1, text:"L'innocent : Qui mourrait en premier ?"},
+            {cat:2, text:"Bois 3 gorgées"}, {cat:2, text:"Distribue 1 shot"},
+            {cat:2, text:"Bois 2 gorgées"}, {cat:2, text:"Bois 4 gorgées"},
+            {cat:3, text:"(Désigne 3) : Vacances, Business, ou panne sur l'autoroute ?"},
+            {cat:4, text:"Le Sniper : POUCE ! Le dernier boit 3."},
+            {cat:4, text:"Le Kamikaze : TIC-TAC ! 10s pour finir son verre."}
+        ];
+        deck = [...cards];
+        currentIdx = 0;
+        drawCard();
+    }
 
     function drawCard() {
-        if(deck.length === 0) deck = [...cards];
+        if(deck.length === 0) startGame();
         const rIdx = Math.floor(Math.random() * deck.length);
         const c = deck[rIdx];
         document.getElementById('turn-info').innerText = "Tour de : " + players[currentIdx];
