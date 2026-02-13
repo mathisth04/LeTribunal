@@ -8,36 +8,20 @@
         :root {
             --bg: #020617; --card-bg: #0f172a; --text: #f8fafc; --accent: #6366f1;
             --cat1: #3b82f6; --cat2: #f43f5e; --cat3: #d946ef; --cat4: #10b981;
-            /* Couleurs Néon pour les Rôles */
-            --neon-default: #6366f1;
-            --neon-la-d: #facc15;      /* Jaune électrique */
-            --neon-la-zoz: #f43f5e;    /* Rose/Rouge néon */
-            --neon-ste-marie: #38bdf8; /* Cyan ciel */
-            --neon-aveugle: #94a3b8;   /* Gris perle */
-            --neon-cloche: #4ade80;    /* Vert fluo */
-            --neon-capitaine: #fb923c; /* Orange mécanique */
-            --neon-opps: #a855f7;      /* Violet mystique */
-            --neon-paf: #f87171;       /* Corail vif */
-            --neon-kamikaze: #ffffff;  /* Blanc pur */
+            --neon-la-d: #facc15; --neon-la-zoz: #f43f5e; --neon-ste-marie: #38bdf8;
+            --neon-aveugle: #818cf8; --neon-cloche: #4ade80; --neon-capitaine: #fb923c;
+            --neon-opps: #a855f7; --neon-paf: #fb7185; --neon-kamikaze: #2dd4bf;
         }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-        /* Navigation */
-        .top-nav { display: flex; gap: 10px; padding: 15px; background: rgba(2, 6, 23, 0.95); justify-content: center; border-bottom: 1px solid #1e293b; z-index: 50; }
-        .btn-tool { background: #0f172a; color: white; border: 1px solid #334155; padding: 10px 15px; border-radius: 12px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+        .top-nav { display: flex; gap: 5px; padding: 10px; background: rgba(2, 6, 23, 0.95); justify-content: center; border-bottom: 1px solid #1e293b; z-index: 50; flex-wrap: wrap; }
+        .btn-tool { background: #0f172a; color: white; border: 1px solid #334155; padding: 8px 10px; border-radius: 10px; cursor: pointer; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
 
         .tab-content { display: none; flex-direction: column; align-items: center; padding: 20px; flex: 1; overflow-y: auto; }
         .tab-content.active { display: flex; }
 
-        /* Cartes de Jeu */
         #card-container { position: relative; width: 85vw; max-width: 320px; height: 110vw; max-height: 460px; margin: 20px 0; perspective: 1200px; }
-        .game-card { 
-            position: absolute; inset: 0; background: var(--card-bg); border-radius: 30px; 
-            border: 4px solid var(--text); display: flex; flex-direction: column; 
-            justify-content: center; padding: 30px; text-align: center;
-            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
+        .game-card { position: absolute; inset: 0; background: var(--card-bg); border-radius: 30px; border: 4px solid var(--text); display: flex; flex-direction: column; justify-content: center; padding: 30px; text-align: center; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
         .slide-out { transform: translateY(-130%) rotate(-10deg); opacity: 0; }
         .slide-in { transform: translateY(100%) scale(0.9); opacity: 0; }
         .active-card { transform: translateY(0) scale(1); opacity: 1; }
@@ -48,58 +32,32 @@
         .cat-3 { border-color: var(--cat3); box-shadow: 0 0 15px var(--cat3); } .cat-3 .cat-label { color: var(--cat3); text-shadow: 0 0 10px var(--cat3); }
         .cat-4 { border-color: var(--cat4); box-shadow: 0 0 15px var(--cat4); } .cat-4 .cat-label { color: var(--cat4); text-shadow: 0 0 10px var(--cat4); }
 
-        /* --- DESIGN NEON DES CARTES DE ROLES --- */
-        .role-card-ui { 
-            position: absolute; inset: 0; background: #020617; border-radius: 30px; 
-            border: 4px solid var(--neon-default); display: flex; flex-direction: column; 
-            padding: 30px; text-align: center; box-sizing: border-box;
-            box-shadow: 0 0 20px var(--neon-default);
-        }
-        .role-name { font-size: 2rem; font-weight: 900; text-transform: uppercase; margin: 0 0 10px 0; }
-        .role-desc { font-size: 0.95rem; color: #f1f5f9; line-height: 1.4; margin-bottom: 15px; }
-        .role-image-placeholder { 
-            flex: 1; margin: 10px 0; border: 2px dashed rgba(255,255,255,0.1); 
-            border-radius: 15px; display: flex; align-items: center; justify-content: center;
-            background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.3); font-style: italic; font-size: 0.8rem;
-        }
+        .role-card-ui { position: absolute; inset: 0; background: #020617; border-radius: 30px; border: 5px solid var(--accent); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; box-sizing: border-box; box-shadow: 0 0 20px var(--accent); }
+        .role-name { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; margin-bottom: 20px; line-height: 1; }
+        .role-desc { font-size: 1.1rem; color: #ffffff; line-height: 1.4; max-width: 90%; }
+        .player-info { font-size: 0.8rem; opacity: 0.5; position: absolute; top: 30px; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* Classes dynamiques de couleurs pour les rôles */
-        .neon-la-d { border-color: var(--neon-la-d); box-shadow: 0 0 25px var(--neon-la-d); }
-        .neon-la-d .role-name { color: var(--neon-la-d); text-shadow: 0 0 15px var(--neon-la-d); }
-        
-        .neon-la-zoz { border-color: var(--neon-la-zoz); box-shadow: 0 0 25px var(--neon-la-zoz); }
-        .neon-la-zoz .role-name { color: var(--neon-la-zoz); text-shadow: 0 0 15px var(--neon-la-zoz); }
+        .neon-la-d { border-color: var(--neon-la-d); box-shadow: 0 0 25px var(--neon-la-d); } .neon-la-d .role-name { color: var(--neon-la-d); text-shadow: 0 0 15px var(--neon-la-d); }
+        .neon-la-zoz { border-color: var(--neon-la-zoz); box-shadow: 0 0 25px var(--neon-la-zoz); } .neon-la-zoz .role-name { color: var(--neon-la-zoz); text-shadow: 0 0 15px var(--neon-la-zoz); }
+        .neon-ste-marie { border-color: var(--neon-ste-marie); box-shadow: 0 0 25px var(--neon-ste-marie); } .neon-ste-marie .role-name { color: var(--neon-ste-marie); text-shadow: 0 0 15px var(--neon-ste-marie); }
+        .neon-aveugle { border-color: var(--neon-aveugle); box-shadow: 0 0 25px var(--neon-aveugle); } .neon-aveugle .role-name { color: var(--neon-aveugle); text-shadow: 0 0 15px var(--neon-aveugle); }
+        .neon-cloche { border-color: var(--neon-cloche); box-shadow: 0 0 25px var(--neon-cloche); } .neon-cloche .role-name { color: var(--neon-cloche); text-shadow: 0 0 15px var(--neon-cloche); }
+        .neon-capitaine { border-color: var(--neon-capitaine); box-shadow: 0 0 25px var(--neon-capitaine); } .neon-capitaine .role-name { color: var(--neon-capitaine); text-shadow: 0 0 15px var(--neon-capitaine); }
+        .neon-opps { border-color: var(--neon-opps); box-shadow: 0 0 25px var(--neon-opps); } .neon-opps .role-name { color: var(--neon-opps); text-shadow: 0 0 15px var(--neon-opps); }
+        .neon-paf { border-color: var(--neon-paf); box-shadow: 0 0 25px var(--neon-paf); } .neon-paf .role-name { color: var(--neon-paf); text-shadow: 0 0 15px var(--neon-paf); }
+        .neon-kamikaze { border-color: var(--neon-kamikaze); box-shadow: 0 0 25px var(--neon-kamikaze); } .neon-kamikaze .role-name { color: var(--neon-kamikaze); text-shadow: 0 0 15px var(--neon-kamikaze); }
 
-        .neon-ste-marie { border-color: var(--neon-ste-marie); box-shadow: 0 0 25px var(--neon-ste-marie); }
-        .neon-ste-marie .role-name { color: var(--neon-ste-marie); text-shadow: 0 0 15px var(--neon-ste-marie); }
-
-        .neon-aveugle { border-color: var(--neon-aveugle); box-shadow: 0 0 25px var(--neon-aveugle); }
-        .neon-aveugle .role-name { color: var(--neon-aveugle); text-shadow: 0 0 15px var(--neon-aveugle); }
-
-        .neon-cloche { border-color: var(--neon-cloche); box-shadow: 0 0 25px var(--neon-cloche); }
-        .neon-cloche .role-name { color: var(--neon-cloche); text-shadow: 0 0 15px var(--neon-cloche); }
-
-        .neon-capitaine { border-color: var(--neon-capitaine); box-shadow: 0 0 25px var(--neon-capitaine); }
-        .neon-capitaine .role-name { color: var(--neon-capitaine); text-shadow: 0 0 15px var(--neon-capitaine); }
-
-        .neon-opps { border-color: var(--neon-opps); box-shadow: 0 0 25px var(--neon-opps); }
-        .neon-opps .role-name { color: var(--neon-opps); text-shadow: 0 0 15px var(--neon-opps); }
-
-        .neon-paf { border-color: var(--neon-paf); box-shadow: 0 0 25px var(--neon-paf); }
-        .neon-paf .role-name { color: var(--neon-paf); text-shadow: 0 0 15px var(--neon-paf); }
-
-        .neon-kamikaze { border-color: var(--neon-kamikaze); box-shadow: 0 0 25px var(--neon-kamikaze); }
-        .neon-kamikaze .role-name { color: var(--neon-kamikaze); text-shadow: 0 0 15px var(--neon-kamikaze); }
-
-        /* Overlays & Boutons */
         #overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 500; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: var(--card-bg); padding: 25px; border-radius: 25px; width: 100%; max-width: 400px; border: 1px solid #475569; }
+        .modal-content { background: var(--card-bg); padding: 25px; border-radius: 25px; width: 100%; max-width: 400px; border: 1px solid #475569; max-height: 80vh; overflow-y: auto; }
 
         .btn-main { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 16px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1.1rem; }
         .zoz-btn { background: #1e293b; color: white; border: 1px solid #334155; padding: 12px; margin: 6px; border-radius: 12px; width: 44%; cursor: pointer; }
         .zoz-btn.selected { border-color: var(--accent); background: #334155; box-shadow: 0 0 10px var(--accent); }
-        input[type="text"] { width: 100%; padding: 15px; border-radius: 12px; border: none; background: #0f172a; color: white; margin-bottom: 15px; font-size: 1rem; border: 1px solid #1e293b; }
+        input[type="text"] { width: 100%; padding: 15px; border-radius: 12px; border: none; background: #0f172a; color: white; margin-bottom: 15px; font-size: 1rem; border: 1px solid #1e293b; box-sizing: border-box;}
+        
+        .role-item { border-bottom: 1px solid #1e293b; padding: 10px 0; text-align: left; }
+        .role-item b { display: block; margin-bottom: 5px; text-transform: uppercase; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -124,6 +82,7 @@
     <div class="top-nav">
         <button class="btn-tool" onclick="toggleModal('modal-rules', true)">📖 RÈGLES</button>
         <button class="btn-tool" onclick="toggleModal('modal-players', true)">👤 JOUEURS</button>
+        <button class="btn-tool" onclick="toggleModal('modal-active-roles', true)">📜 RÔLES ACTIFS</button>
     </div>
     <div id="turn-info" style="margin-top: 20px; font-weight: 800; font-size: 1.3rem; color: var(--accent);"></div>
     <div id="card-container"></div>
@@ -145,19 +104,22 @@
     <button class="btn-main" style="margin-top:20px;" onclick="toggleModal('modal-players', false)">RETOUR</button>
 </div></div>
 
+<div id="modal-active-roles" class="modal"><div class="modal-content">
+    <h3>Rôles en jeu</h3><div id="active-roles-list"></div>
+    <button class="btn-main" style="margin-top:20px;" onclick="toggleModal('modal-active-roles', false)">RETOUR</button>
+</div></div>
+
 <div id="overlay">
     <div id="transition-screen">
         <h2 id="next-player-name" style="font-size: 1.8rem; margin-bottom: 20px;"></h2>
         <button class="btn-main" onclick="revealRoleNow()">DÉVOILER MON RÔLE</button>
     </div>
-    
     <div id="role-screen" class="role-card-ui" style="display:none;">
-        <div id="overlay-player" style="font-size: 0.8rem; opacity: 0.5; margin-bottom: 5px; text-transform: uppercase;"></div>
+        <div id="overlay-player" class="player-info"></div>
         <div id="overlay-role" class="role-name"></div>
         <div id="overlay-desc" class="role-desc"></div>
-        <div id="role-image" class="role-image-placeholder">Illustration Néon à venir...</div>
-        <div id="zoz-choice-container" style="display:none; flex-wrap:wrap; justify-content:center; margin-bottom:10px;"></div>
-        <button id="overlay-btn" class="btn-main" onclick="closeOverlay()">C'EST COMPRIS</button>
+        <div id="zoz-choice-container" style="display:none; flex-wrap:wrap; justify-content:center; margin-top:30px;"></div>
+        <button id="overlay-btn" class="btn-main" style="position: absolute; bottom: 30px; width: 80%;" onclick="closeOverlay()">C'EST COMPRIS</button>
     </div>
 </div>
 
@@ -169,21 +131,14 @@
     let deck = [];
     let isAnimating = false;
 
-    // Mapping pour les classes CSS Néon
     const neonClasses = {
-        "La D": "neon-la-d",
-        "La Zoz": "neon-la-zoz",
-        "La Sainte Marie": "neon-ste-marie",
-        "L'Aveugle": "neon-aveugle",
-        "Cloche Brésilienne": "neon-cloche",
-        "Le Cacapitaine": "neon-capitaine",
-        "Le Opps": "neon-opps",
-        "Paf": "neon-paf",
-        "Le Kamikaze": "neon-kamikaze"
+        "La D": "neon-la-d", "La Zoz": "neon-la-zoz", "La Sainte Marie": "neon-ste-marie",
+        "L'Aveugle": "neon-aveugle", "Cloche Brésilienne": "neon-cloche", "Le Cacapitaine": "neon-capitaine",
+        "Le Opps": "neon-opps", "Paf": "neon-paf", "Le Kamikaze": "neon-kamikaze"
     };
 
     const allRoles = [
-        { name: "La D", uses: 2, desc: "Sers un shot à qui tu veux (2 utilisations)." },
+        { name: "La D", uses: 2, desc: "À n’importe quel moment dans la partie, tu peux servir un shot à qui tu le veux (2 utilisations)." },
         { name: "La Zoz", uses: 0, desc: "Choisis ton partenaire lié. Jamais de boissons entre vous." },
         { name: "La Sainte Marie", uses: 3, desc: "Trouve les Zoz (3 chances). Si tu réussis, ils boivent." },
         { name: "L'Aveugle", uses: 2, desc: "Sers un verre dosé à l'aveugle (2 utilisations)." },
@@ -191,17 +146,18 @@
         { name: "Le Cacapitaine", uses: 2, desc: "Change le destinataire d'un verre/shot (2 utilisations)." },
         { name: "Le Opps", uses: 0, desc: "Tu connais les Zoz. Aide la Sainte Marie." },
         { name: "Paf", uses: 2, desc: "Prends le contrôle d'une distribution (2 utilisations)." },
-        { name: "Le Kamikaze", uses: 1, desc: "TIC-TAC (10s pour finir). Échec = Tu bois cul-sec." }
+        { name: "Le Kamikaze", uses: 1, desc: "TIC-TAC (10s pour finir son verre). Échec = Tu bois cul-sec." }
     ];
 
     const duplicatables = ["La D", "L'Aveugle", "Cloche Brésilienne", "Le Cacapitaine", "Paf", "Le Kamikaze"];
 
     const baseCards = [
-        {cat:1, text:"Qui texterait son ex après 3 verres ?"},
-        {cat:1, text:"Qui est le plus mauvais conducteur ?"},
-        {cat:2, text:"Bois 3 gorgées"}, {cat:2, text:"Distribue 1 shot"},
-        {cat:3, text:"Swap : Échange ta famille avec l'un et ton compte bancaire."},
-        {cat:4, text:"Sniper : POUCE ! Le dernier boit 3."}
+        {cat:1, text:"Qui est le plus susceptible de texter son ex après 3 verres ?"},
+        {cat:1, text:"Qui est le plus mauvais conducteur du groupe ?"},
+        {cat:2, text:"Bois 2 gorgées"}, {cat:2, text:"Bois 3 gorgées"}, {cat:2, text:"Distribue 1 shot"},
+        {cat:3, text:"(Désigne 3) : Vacances, Business, ou panne sur l'autoroute ?"},
+        {cat:4, text:"Le Sniper : POUCE ! Le dernier boit 3."}
+        /* Ajoutez ici les autres cartes du fichier texte */
     ];
 
     function registerPlayer() {
@@ -249,6 +205,7 @@
         rolesToAssign.sort(() => 0.5 - Math.random());
         pIdx.forEach((idx, i) => finalMapping[idx] = rolesToAssign[i]);
         players.forEach((p, i) => rolesData[p] = finalMapping[i]);
+
         currentIdx = 0;
         document.getElementById('overlay').style.display = 'flex';
         prepareTransition();
@@ -256,7 +213,10 @@
 
     function toggleModal(id, show) {
         document.getElementById(id).style.display = show ? 'flex' : 'none';
-        if(id === 'modal-players' && show) updateDashboard();
+        if(show) {
+            if(id === 'modal-players') updateDashboard();
+            if(id === 'modal-active-roles') updateActiveRolesList();
+        }
     }
 
     function updateDashboard() {
@@ -268,6 +228,20 @@
             return `<div style="padding:12px; border-bottom:1px solid #1e293b; display:flex; justify-content:space-between; align-items:center;">
                 <div><strong>${p}</strong><br><small style="color:var(--accent)">${r.name}</small></div>
                 <div>${tokens}</div>
+            </div>`;
+        }).join('');
+    }
+
+    function updateActiveRolesList() {
+        const listContainer = document.getElementById('active-roles-list');
+        // On récupère les noms uniques des rôles attribués
+        const assignedRoles = [...new Set(Object.values(rolesData).map(r => r.name))];
+        listContainer.innerHTML = assignedRoles.map(roleName => {
+            const roleInfo = allRoles.find(r => r.name === roleName);
+            const color = getComputedStyle(document.documentElement).getPropertyValue('--neon-' + roleName.toLowerCase().replace(' ', '-').normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+            return `<div class="role-item">
+                <b style="color:${color}">${roleName}</b>
+                <p style="font-size:0.8rem; opacity:0.8; margin:0;">${roleInfo.desc}</p>
             </div>`;
         }).join('');
     }
@@ -286,11 +260,8 @@
         document.getElementById('transition-screen').style.display = 'none';
         const roleScreen = document.getElementById('role-screen');
         roleScreen.style.display = 'flex';
-        
-        // Appliquer la classe de couleur Néon spécifique
         roleScreen.className = "role-card-ui " + (neonClasses[data.name] || "");
-        
-        document.getElementById('overlay-player').innerText = "Identité de " + name;
+        document.getElementById('overlay-player').innerText = "IDENTITÉ DE " + name;
         document.getElementById('overlay-role').innerText = data.name;
         document.getElementById('overlay-desc').innerText = data.desc;
         const zozDiv = document.getElementById('zoz-choice-container');
@@ -301,6 +272,8 @@
             zozDiv.innerHTML = players.map(p => `<button class="zoz-btn" id="zoz-${p}" onclick="selectZoz('${p}')">${p}</button>`).join('');
         } else if(data.name === "Le Opps") {
             document.getElementById('overlay-desc').innerText += `\n\nLES ZOZ SONT : ${zozPartners.join(" et ")}`;
+        } else {
+            document.getElementById('overlay-btn').style.display = "block";
         }
     }
 
