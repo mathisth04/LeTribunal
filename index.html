@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Tribunal">
     
-    <title>Le Tribunal des Mythes - iPhone 14 Fix</title>
+    <title>Le Tribunal des Mythes - iPhone 14 Final</title>
     <style>
         :root {
             --bg: #020617; --card-bg: #0f172a; --text: #f8fafc; --accent: #6366f1;
@@ -19,14 +19,14 @@
         }
         
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
             background: var(--bg); color: var(--text); 
             margin: 0; display: flex; flex-direction: column; height: 100vh; 
             overflow: hidden; padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
             box-sizing: border-box;
         }
 
-        /* Navigation */
+        /* Barre de navigation */
         .top-nav { display: flex; gap: 5px; padding: 10px; background: rgba(2, 6, 23, 0.95); justify-content: center; border-bottom: 1px solid #1e293b; z-index: 50; }
         .btn-tool { background: #0f172a; color: white; border: 1px solid #334155; padding: 8px 10px; border-radius: 10px; cursor: pointer; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; }
 
@@ -34,19 +34,46 @@
         .tab-content.active { display: flex; }
 
         /* Conteneurs de Cartes */
-        #card-container, #role-display-area { 
-            position: relative; width: 85vw; max-width: 330px; height: 60vh; max-height: 480px; 
+        #card-container { 
+            position: relative; width: 85vw; max-width: 330px; height: 55vh; 
             margin: auto; perspective: 1200px; 
         }
 
-        .game-card, .role-card-ui { 
+        .game-card { 
             position: absolute; inset: 0; background: var(--card-bg); border-radius: 35px; 
             border: 4px solid var(--text); display: flex; flex-direction: column; 
-            justify-content: center; padding: 30px; text-align: center; 
+            justify-content: center; padding: 25px; text-align: center; 
             box-shadow: 0 15px 40px rgba(0,0,0,0.8);
-            box-sizing: border-box;
         }
 
+        /* --- DESIGN NEON CARTES DE RÔLES (Correction bouton) --- */
+        #role-display-area {
+            display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 80vh;
+        }
+
+        .role-card-ui { 
+            width: 85vw; max-width: 330px; height: 60vh; background: #020617; border-radius: 35px; 
+            border: 5px solid var(--accent); display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; padding: 25px; text-align: center; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9); position: relative;
+        }
+
+        .role-name { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; margin-bottom: 15px; line-height: 1; }
+        .role-desc { font-size: 1rem; color: #ffffff; line-height: 1.4; margin-bottom: 10px; }
+        .player-info { font-size: 0.75rem; opacity: 0.5; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+
+        /* Néons */
+        .neon-la-d { border-color: var(--neon-la-d); box-shadow: 0 0 20px var(--neon-la-d); } .neon-la-d .role-name { color: var(--neon-la-d); }
+        .neon-la-zoz { border-color: var(--neon-la-zoz); box-shadow: 0 0 20px var(--neon-la-zoz); } .neon-la-zoz .role-name { color: var(--neon-la-zoz); }
+        .neon-ste-marie { border-color: var(--neon-ste-marie); box-shadow: 0 0 20px var(--neon-ste-marie); } .neon-ste-marie .role-name { color: var(--neon-ste-marie); }
+        .neon-aveugle { border-color: var(--neon-aveugle); box-shadow: 0 0 20px var(--neon-aveugle); } .neon-aveugle .role-name { color: var(--neon-aveugle); }
+        .neon-cloche { border-color: var(--neon-cloche); box-shadow: 0 0 20px var(--neon-cloche); } .neon-cloche .role-name { color: var(--neon-cloche); }
+        .neon-capitaine { border-color: var(--neon-capitaine); box-shadow: 0 0 20px var(--neon-capitaine); } .neon-capitaine .role-name { color: var(--neon-capitaine); }
+        .neon-opps { border-color: var(--neon-opps); box-shadow: 0 0 20px var(--neon-opps); } .neon-opps .role-name { color: var(--neon-opps); }
+        .neon-paf { border-color: var(--neon-paf); box-shadow: 0 0 20px var(--neon-paf); } .neon-paf .role-name { color: var(--neon-paf); }
+        .neon-kamikaze { border-color: var(--neon-kamikaze); box-shadow: 0 0 20px var(--neon-kamikaze); } .neon-kamikaze .role-name { color: var(--neon-kamikaze); }
+
+        /* Animations cartes jeu */
         .slide-out { transform: translateY(-130%) rotate(-10deg); opacity: 0; }
         .slide-in { transform: translateY(100%) scale(0.9); opacity: 0; }
         .active-card { transform: translateY(0) scale(1); opacity: 1; }
@@ -57,26 +84,10 @@
         .cat-3 { border-color: var(--cat3); } .cat-3 .cat-label { color: var(--cat3); }
         .cat-4 { border-color: var(--cat4); } .cat-4 .cat-label { color: var(--cat4); }
 
-        .role-card-ui { background: #020617; border-width: 5px; align-items: center; }
-        .role-name { font-size: 2.1rem; font-weight: 900; text-transform: uppercase; margin-bottom: 15px; line-height: 1.1; }
-        .role-desc { font-size: 1rem; color: #ffffff; line-height: 1.5; }
-        .player-info { font-size: 0.75rem; opacity: 0.5; position: absolute; top: 30px; text-transform: uppercase; letter-spacing: 2px; }
-
-        /* Néons Rôles */
-        .neon-la-d { border-color: var(--neon-la-d); box-shadow: 0 0 20px var(--neon-la-d); } .neon-la-d .role-name { color: var(--neon-la-d); text-shadow: 0 0 10px var(--neon-la-d); }
-        .neon-la-zoz { border-color: var(--neon-la-zoz); box-shadow: 0 0 20px var(--neon-la-zoz); } .neon-la-zoz .role-name { color: var(--neon-la-zoz); text-shadow: 0 0 10px var(--neon-la-zoz); }
-        .neon-ste-marie { border-color: var(--neon-ste-marie); box-shadow: 0 0 20px var(--neon-ste-marie); } .neon-ste-marie .role-name { color: var(--neon-ste-marie); text-shadow: 0 0 10px var(--neon-ste-marie); }
-        .neon-aveugle { border-color: var(--neon-aveugle); box-shadow: 0 0 20px var(--neon-aveugle); } .neon-aveugle .role-name { color: var(--neon-aveugle); text-shadow: 0 0 10px var(--neon-aveugle); }
-        .neon-cloche { border-color: var(--neon-cloche); box-shadow: 0 0 20px var(--neon-cloche); } .neon-cloche .role-name { color: var(--neon-cloche); text-shadow: 0 0 10px var(--neon-cloche); }
-        .neon-capitaine { border-color: var(--neon-capitaine); box-shadow: 0 0 20px var(--neon-capitaine); } .neon-capitaine .role-name { color: var(--neon-capitaine); text-shadow: 0 0 10px var(--neon-capitaine); }
-        .neon-opps { border-color: var(--neon-opps); box-shadow: 0 0 20px var(--neon-opps); } .neon-opps .role-name { color: var(--neon-opps); text-shadow: 0 0 10px var(--neon-opps); }
-        .neon-paf { border-color: var(--neon-paf); box-shadow: 0 0 20px var(--neon-paf); } .neon-paf .role-name { color: var(--neon-paf); text-shadow: 0 0 10px var(--neon-paf); }
-        .neon-kamikaze { border-color: var(--neon-kamikaze); box-shadow: 0 0 20px var(--neon-kamikaze); } .neon-kamikaze .role-name { color: var(--neon-kamikaze); text-shadow: 0 0 10px var(--neon-kamikaze); }
-
-        .btn-main { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 18px; font-weight: bold; width: 100%; max-width: 330px; cursor: pointer; font-size: 1.1rem; }
+        /* Boutons */
+        .btn-main { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 18px; font-weight: bold; width: 100%; max-width: 330px; cursor: pointer; font-size: 1.1rem; z-index: 1100; }
         input[type="text"] { width: 100%; max-width: 330px; padding: 16px; border-radius: 14px; border: 1px solid #1e293b; background: #0f172a; color: white; margin-bottom: 15px; font-size: 1rem; box-sizing: border-box; }
-        
-        .zoz-btn { background: #1e293b; color: white; border: 1px solid #334155; padding: 12px; margin: 5px; border-radius: 12px; width: 45%; cursor: pointer; }
+        .zoz-btn { background: #1e293b; color: white; border: 1px solid #334155; padding: 10px; margin: 4px; border-radius: 10px; width: 45%; cursor: pointer; font-size: 0.8rem; }
         .zoz-btn.selected { border-color: var(--accent); background: #312e81; }
 
         #overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
@@ -106,11 +117,11 @@
         <button class="btn-tool" onclick="toggleModal('modal-players', true)">👤 JOUEURS</button>
         <button class="btn-tool" onclick="toggleModal('modal-active-roles', true)">📜 RÔLES</button>
     </div>
-    <div id="turn-info" style="margin-top: 20px; font-weight: 800; font-size: 1.5rem; color: var(--accent);"></div>
+    <div id="turn-info" style="margin-top: 15px; font-weight: 800; font-size: 1.4rem; color: var(--accent);"></div>
     <div id="card-container"></div>
     <div style="width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
         <button class="btn-main" onclick="drawCardWithAnimation()">PIOCHER UNE CARTE</button>
-        <button onclick="location.reload()" style="background:none; border:none; color:gray; margin-top:15px; cursor:pointer; font-size:0.8rem;">✖ FIN DE PARTIE</button>
+        <button onclick="location.reload()" style="background:none; border:none; color:gray; margin-top:10px; cursor:pointer; font-size:0.8rem;">✖ FIN DE PARTIE</button>
     </div>
 </div>
 
@@ -137,14 +148,14 @@
         <button class="btn-main" onclick="revealRoleNow()">DÉVOILER MON RÔLE</button>
     </div>
     
-    <div id="role-display-area" style="display:none; width: 100%; flex-direction: column; align-items: center;">
+    <div id="role-display-area">
         <div id="role-screen" class="role-card-ui">
             <div id="overlay-player" class="player-info"></div>
             <div id="overlay-role" class="role-name"></div>
             <div id="overlay-desc" class="role-desc"></div>
-            <div id="zoz-choice-container" style="display:none; flex-wrap:wrap; justify-content:center; margin-top:15px;"></div>
+            <div id="zoz-choice-container" style="display:none; flex-wrap:wrap; justify-content:center; margin-top:10px;"></div>
         </div>
-        <button id="overlay-btn" class="btn-main" style="margin-top: 25px;" onclick="closeOverlay()">C'EST COMPRIS</button>
+        <button id="overlay-btn" class="btn-main" style="margin-top: 20px;" onclick="closeOverlay()">C'EST COMPRIS</button>
     </div>
 </div>
 
@@ -302,11 +313,10 @@
         const zozDiv = document.getElementById('zoz-choice-container');
         zozDiv.style.display = "none"; zozDiv.innerHTML = "";
         
-        // Sécurité : On réaffiche toujours le bouton OK par défaut
         document.getElementById('overlay-btn').style.display = "block";
 
         if(data.name === "La Zoz") {
-            document.getElementById('overlay-btn').style.display = "none"; // Caché pour forcer le choix
+            document.getElementById('overlay-btn').style.display = "none";
             zozDiv.style.display = "flex";
             zozDiv.innerHTML = players.map(p => `<button class="zoz-btn" id="zoz-${p}" onclick="selectZoz('${p}')">${p}</button>`).join('');
         } else if(data.name === "Le Opps") {
@@ -319,17 +329,14 @@
         else if(zozPartners.length < 2) zozPartners.push(p);
         document.querySelectorAll('.zoz-btn').forEach(b => b.classList.remove('selected'));
         zozPartners.forEach(x => document.getElementById(`zoz-${x}`)?.classList.add('selected'));
-        
-        // Réaffiche le bouton seulement quand 2 sont sélectionnés
         document.getElementById('overlay-btn').style.display = (zozPartners.length === 2) ? "block" : "none";
     }
 
     function closeOverlay() {
         document.getElementById('zoz-choice-container').innerHTML = "";
         currentIdx++;
-        if(currentIdx < players.length) {
-            prepareTransition();
-        } else {
+        if(currentIdx < players.length) prepareTransition();
+        else {
             document.getElementById('overlay').style.display = 'none';
             document.getElementById('config-tab').classList.remove('active');
             document.getElementById('game-tab').classList.add('active');
