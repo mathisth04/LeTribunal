@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Tribunal - Rôles Multiples</title>
+    <title>Le Tribunal - Rôles Équilibrés</title>
     <style>
         :root {
             --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc; --accent: #6366f1;
@@ -14,16 +14,12 @@
         .tab-content.active { display: flex; }
         .btn-main { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
         input { width: 80%; padding: 12px; border-radius: 8px; border: none; background: #1e293b; color: white; margin-bottom: 10px; }
-        
         #overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 100; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
         .role-card { width: 85vw; max-width: 350px; padding: 30px 20px; background: var(--card-bg); border-radius: 25px; border: 4px solid var(--accent); }
-        
         .zoz-btn { background: #334155; color: white; border: 1px solid var(--accent); padding: 10px; margin: 5px; border-radius: 8px; width: 45%; cursor: pointer; }
         .zoz-btn.selected { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
-        
         .player-tag { background: #334155; padding: 5px 12px; border-radius: 15px; margin: 3px; display: inline-block; font-size: 0.8rem; }
         .role-option { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 300px; background: #1e293b; padding: 10px; margin: 5px 0; border-radius: 8px; font-size: 0.9rem; }
-        
         .game-card { width: 80vw; max-width: 320px; height: 100vw; max-height: 400px; background: var(--card-bg); border-radius: 25px; border: 5px solid var(--text); display: flex; flex-direction: column; justify-content: center; padding: 25px; text-align: center; position: relative; margin: 20px 0; }
     </style>
 </head>
@@ -89,7 +85,6 @@
         { name: "Le Kamikaze", desc: "À tout moment, désigne quelqu'un : TIC-TAC. Il a 10s pour finir son verre. S'il réussit, TU bois cul-sec. S'il échoue, il boit tout." }
     ];
 
-    // Liste des rôles autorisés à être en double
     const duplicatableNames = ["La D", "L'Aveugle", "Cloche Brésilienne", "Le Cacapitaine", "Paf", "Le Kamikaze"];
 
     function registerPlayer() {
@@ -117,45 +112,44 @@
     function validateAndStart() {
         let selectedPool = [];
         allRoles.forEach((r, i) => { if(document.getElementById(`role-${i}`).checked) selectedPool.push(r); });
-
-        // Si aucun rôle n'est sélectionné, on met tout par défaut
         if(selectedPool.length === 0) selectedPool = [...allRoles];
 
-        let rolesToAssign = [...selectedPool].sort(() => 0.5 - Math.random());
+        let rolesToAssign = [];
         
-        // Si plus de joueurs que de rôles sélectionnés, on complète avec les duplicatables
+        // 1. On prend d'abord tous les rôles uniques sélectionnés (jusqu'à limite joueurs)
+        let uniqueSelected = [...selectedPool].sort(() => 0.5 - Math.random());
+        rolesToAssign = uniqueSelected.slice(0, players.length);
+
+        // 2. S'il reste des joueurs sans rôle, on complète avec les doublons autorisés
         if (rolesToAssign.length < players.length) {
             let possibleDuplicates = allRoles.filter(r => duplicatableNames.includes(r.name));
             while (rolesToAssign.length < players.length) {
-                let randomRole = possibleDuplicates[Math.floor(Math.random() * possibleDuplicates.length)];
-                rolesToAssign.push(randomRole);
+                // On mélange la liste des doublons pour ne pas avoir le même en boucle
+                let shuffledDuplicates = [...possibleDuplicates].sort(() => 0.5 - Math.random());
+                rolesToAssign.push(shuffledDuplicates[0]);
             }
-        } else {
-            // Si trop de rôles, on coupe
-            rolesToAssign = rolesToAssign.slice(0, players.length);
         }
 
+        // --- DISTRIBUTION STRATÉGIQUE ---
         let finalMapping = new Array(players.length).fill(null);
         let playerIndices = Array.from({length: players.length}, (_, i) => i);
         
-        const zozInGame = rolesToAssign.find(r => r.name === "La Zoz");
-        const oppsInGame = rolesToAssign.find(r => r.name === "Le Opps");
+        const zozRole = rolesToAssign.find(r => r.name === "La Zoz");
+        const oppsRole = rolesToAssign.find(r => r.name === "Le Opps");
 
-        // Logique forcée Zoz -> Opps
-        if (zozInGame && oppsInGame) {
+        if (zozRole && oppsRole) {
             let zozIdx = Math.floor(Math.random() * (players.length - 1));
-            finalMapping[zozIdx] = zozInGame;
-            rolesToAssign.splice(rolesToAssign.indexOf(zozInGame), 1);
+            finalMapping[zozIdx] = zozRole;
+            rolesToAssign.splice(rolesToAssign.indexOf(zozRole), 1);
             playerIndices.splice(playerIndices.indexOf(zozIdx), 1);
 
             let possibleOppsIndices = playerIndices.filter(i => i > zozIdx);
             let oppsIdx = possibleOppsIndices[Math.floor(Math.random() * possibleOppsIndices.length)];
-            finalMapping[oppsIdx] = oppsInGame;
-            rolesToAssign.splice(rolesToAssign.indexOf(oppsInGame), 1);
+            finalMapping[oppsIdx] = oppsRole;
+            rolesToAssign.splice(rolesToAssign.indexOf(oppsRole), 1);
             playerIndices.splice(playerIndices.indexOf(oppsIdx), 1);
         }
 
-        // Remplir le reste
         rolesToAssign = rolesToAssign.sort(() => 0.5 - Math.random());
         playerIndices.forEach((pIdx, i) => {
             finalMapping[pIdx] = rolesToAssign[i];
@@ -211,7 +205,6 @@
         document.getElementById('zoz-choice-container').style.display = "none";
         document.getElementById('zoz-choice-container').innerHTML = "";
         document.getElementById('overlay-btn').style.display = "block";
-
         currentIdx++;
         if(currentIdx < players.length) {
             prepareTransition();
@@ -228,9 +221,41 @@
             {cat:1, text:"Qui texterait son ex après 3 verres ?"},
             {cat:1, text:"Qui est le plus mauvais conducteur ?"},
             {cat:1, text:"Qui pourrait faire de la télé-réalité ?"},
-            {cat:2, text:"Bois 3 gorgées"}, {cat:2, text:"Distribue 1 shot"},
+            {cat:1, text:"L'Infiltré : Qui s'incrusterait à un mariage ?"},
+            {cat:1, text:"Le Mytho : Qui ment pour se sortir de galère ?"},
+            {cat:1, text:"Le Survivor : Qui survivrait le plus longtemps ?"},
+            {cat:1, text:"L'innocent : Qui mourrait en premier ?"},
+            {cat:1, text:"Mauvais Plan : Tatouage regretté sur un coup de tête ?"},
+            {cat:1, text:"Red Flag : Qui a le pire goût amoureux ?"},
+            {cat:1, text:"Stockholm : Qui tombe amoureux de qui l'ignore ?"},
+            {cat:1, text:"Morphée : Qui disparaît sans prévenir pour dormir ?"},
+            {cat:1, text:"Le Fugitif : Qui part avec les habits d'un autre ?"},
+            {cat:2, text:"Bois 2 gorgées"}, {cat:2, text:"Bois 3 gorgées"}, {cat:2, text:"Bois 4 gorgées"},
+            {cat:2, text:"Bois 5 gorgées"}, {cat:2, text:"Bois 1 shot"}, {cat:2, text:"Distribue 2 gorgées"},
+            {cat:2, text:"Distribue 3 gorgées"}, {cat:2, text:"Distribue 4 gorgées"}, {cat:2, text:"Distribue 5 gorgées"},
+            {cat:2, text:"Distribue 1 shot"},
             {cat:3, text:"(Désigne 3) : Vacances, Business, ou panne sur l'autoroute ?"},
-            {cat:4, text:"Le Sniper : POUCE ! Le dernier boit 3."}
+            {cat:3, text:"(Désigne 2) : Sauve l'un d'un incendie, l'autre perd ses cheveux."},
+            {cat:3, text:"(Désigne 3) : Île déserte. Mariage, une nuit, ou sacrifice ?"},
+            {cat:3, text:"(Désigne 3) : Prêt 1000€, blague raciste, se casser la gueule."},
+            {cat:3, text:"(Désigne 3) : Kiss, Marry ou Fuck (Groupe choisit les acteurs)."},
+            {cat:3, text:"Swap : Échange ta famille avec l'un et ton compte avec l'autre."},
+            {cat:3, text:"Complices : Classe 3 personnes de l'alibi au traître."},
+            {cat:4, text:"L'idiot : Chaque réponse = boire (jusqu'au prochain tour)."},
+            {cat:4, text:"Le fou : Deux personnes échangent leurs verres."},
+            {cat:4, text:"Sommelier : Remplis le verre d'un ami."},
+            {cat:4, text:"Ivrogne : On te fait ton prochain verre."},
+            {cat:4, text:"Le Muet : Silence jusqu'au prochain tour."},
+            {cat:4, text:"Cascade : Tout le monde boit, tu termines (+2)."},
+            {cat:4, text:"Miroir : Choisis un jumeau. Verres liés."},
+            {cat:4, text:"Sniper : POUCE ! Le dernier boit 3."},
+            {cat:4, text:"Try Harder : POUCE ! Le premier boit 3."},
+            {cat:4, text:"Le Roi : Instaure une règle."},
+            {cat:4, text:"Geôlier : Lie deux personnes."},
+            {cat:4, text:"Kamikaze : Shot pour forcer 2 verres finis. Sinon tu bois."},
+            {cat:4, text:"T-Rex : Coudes au corps. Erreur = 2."},
+            {cat:4, text:"Prénoms : 'Chef' ou 'Champion' obligatoire."},
+            {cat:4, text:"Vote Blanc : Interdiction de voter plaidoirie."}
         ];
         deck = [...cards];
         currentIdx = 0;
