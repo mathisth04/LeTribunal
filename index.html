@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Tribunal">
     
-    <title>Le Tribunal des Mythes - Full Edition</title>
+    <title>Le Tribunal des Mythes - iPhone 14 Opti</title>
     <style>
         :root {
             --bg: #020617; --card-bg: #0f172a; --text: #f8fafc; --accent: #6366f1;
@@ -19,61 +19,82 @@
         }
         
         body { 
-            font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--bg); color: var(--text); 
             margin: 0; display: flex; flex-direction: column; height: 100vh; 
-            overflow: hidden; padding-top: env(safe-area-inset-top); 
+            overflow: hidden; padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
+            box-sizing: border-box;
         }
 
+        /* Navigation */
         .top-nav { display: flex; gap: 5px; padding: 10px; background: rgba(2, 6, 23, 0.95); justify-content: center; border-bottom: 1px solid #1e293b; z-index: 50; }
         .btn-tool { background: #0f172a; color: white; border: 1px solid #334155; padding: 8px 10px; border-radius: 10px; cursor: pointer; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; }
 
         .tab-content { display: none; flex-direction: column; align-items: center; padding: 20px; flex: 1; overflow-y: auto; }
         .tab-content.active { display: flex; }
 
-        #card-container { position: relative; width: 85vw; max-width: 320px; height: 110vw; max-height: 460px; margin: 20px 0; perspective: 1200px; }
-        .game-card { position: absolute; inset: 0; background: var(--card-bg); border-radius: 30px; border: 4px solid var(--text); display: flex; flex-direction: column; justify-content: center; padding: 30px; text-align: center; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-        
+        /* Cartes de Jeu & Rôles */
+        #card-container, #role-display-container { 
+            position: relative; width: 85vw; max-width: 330px; height: 65vh; max-height: 500px; 
+            margin: auto; perspective: 1200px; 
+        }
+
+        .game-card, .role-card-ui { 
+            position: absolute; inset: 0; background: var(--card-bg); border-radius: 35px; 
+            border: 4px solid var(--text); display: flex; flex-direction: column; 
+            justify-content: center; padding: 30px; text-align: center; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+            box-sizing: border-box;
+        }
+
+        /* Animation Cartes Jeu */
         .slide-out { transform: translateY(-130%) rotate(-10deg); opacity: 0; }
         .slide-in { transform: translateY(100%) scale(0.9); opacity: 0; }
         .active-card { transform: translateY(0) scale(1); opacity: 1; }
 
-        .cat-label { font-size: 0.9rem; font-weight: 900; letter-spacing: 2px; margin-bottom: 25px; text-transform: uppercase; }
-        .cat-1 { border-color: var(--cat1); box-shadow: 0 0 15px var(--cat1); } .cat-1 .cat-label { color: var(--cat1); text-shadow: 0 0 10px var(--cat1); }
-        .cat-2 { border-color: var(--cat2); box-shadow: 0 0 15px var(--cat2); } .cat-2 .cat-label { color: var(--cat2); text-shadow: 0 0 10px var(--cat2); }
-        .cat-3 { border-color: var(--cat3); box-shadow: 0 0 15px var(--cat3); } .cat-3 .cat-label { color: var(--cat3); text-shadow: 0 0 10px var(--cat3); }
-        .cat-4 { border-color: var(--cat4); box-shadow: 0 0 15px var(--cat4); } .cat-4 .cat-label { color: var(--cat4); text-shadow: 0 0 10px var(--cat4); }
+        .cat-label { font-size: 0.85rem; font-weight: 900; letter-spacing: 2px; margin-bottom: 25px; text-transform: uppercase; }
+        .cat-1 { border-color: var(--cat1); box-shadow: 0 0 20px rgba(59,130,246,0.2); } .cat-1 .cat-label { color: var(--cat1); }
+        .cat-2 { border-color: var(--cat2); box-shadow: 0 0 20px rgba(244,63,94,0.2); } .cat-2 .cat-label { color: var(--cat2); }
+        .cat-3 { border-color: var(--cat3); box-shadow: 0 0 20px rgba(217,70,239,0.2); } .cat-3 .cat-label { color: var(--cat3); }
+        .cat-4 { border-color: var(--cat4); box-shadow: 0 0 20px rgba(16,185,129,0.2); } .cat-4 .cat-label { color: var(--cat4); }
 
-        .role-card-ui { position: absolute; inset: 0; background: #020617; border-radius: 30px; border: 5px solid var(--accent); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; box-sizing: border-box; }
-        .role-name { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; margin-bottom: 20px; line-height: 1; }
-        .role-desc { font-size: 1.1rem; color: #ffffff; line-height: 1.4; max-width: 90%; }
+        /* --- DESIGN NEON CARTES DE RÔLES --- */
+        .role-card-ui { 
+            background: #020617; border-width: 5px; 
+            justify-content: center; align-items: center;
+        }
+        .role-name { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; margin-bottom: 15px; line-height: 1.1; }
+        .role-desc { font-size: 1rem; color: #ffffff; line-height: 1.5; max-width: 95%; }
+        .player-info { font-size: 0.75rem; opacity: 0.5; position: absolute; top: 35px; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* Classes Néon Dynamiques */
-        .neon-la-d { border-color: var(--neon-la-d); box-shadow: 0 0 25px var(--neon-la-d); } .neon-la-d .role-name { color: var(--neon-la-d); text-shadow: 0 0 15px var(--neon-la-d); }
-        .neon-la-zoz { border-color: var(--neon-la-zoz); box-shadow: 0 0 25px var(--neon-la-zoz); } .neon-la-zoz .role-name { color: var(--neon-la-zoz); text-shadow: 0 0 15px var(--neon-la-zoz); }
-        .neon-ste-marie { border-color: var(--neon-ste-marie); box-shadow: 0 0 25px var(--neon-ste-marie); } .neon-ste-marie .role-name { color: var(--neon-ste-marie); text-shadow: 0 0 15px var(--neon-ste-marie); }
-        .neon-aveugle { border-color: var(--neon-aveugle); box-shadow: 0 0 25px var(--neon-aveugle); } .neon-aveugle .role-name { color: var(--neon-aveugle); text-shadow: 0 0 15px var(--neon-aveugle); }
-        .neon-cloche { border-color: var(--neon-cloche); box-shadow: 0 0 25px var(--neon-cloche); } .neon-cloche .role-name { color: var(--neon-cloche); text-shadow: 0 0 15px var(--neon-cloche); }
-        .neon-capitaine { border-color: var(--neon-capitaine); box-shadow: 0 0 25px var(--neon-capitaine); } .neon-capitaine .role-name { color: var(--neon-capitaine); text-shadow: 0 0 15px var(--neon-capitaine); }
-        .neon-opps { border-color: var(--neon-opps); box-shadow: 0 0 25px var(--neon-opps); } .neon-opps .role-name { color: var(--neon-opps); text-shadow: 0 0 15px var(--neon-opps); }
-        .neon-paf { border-color: var(--neon-paf); box-shadow: 0 0 25px var(--neon-paf); } .neon-paf .role-name { color: var(--neon-paf); text-shadow: 0 0 15px var(--neon-paf); }
-        .neon-kamikaze { border-color: var(--neon-kamikaze); box-shadow: 0 0 25px var(--neon-kamikaze); } .neon-kamikaze .role-name { color: var(--neon-kamikaze); text-shadow: 0 0 15px var(--neon-kamikaze); }
+        /* Néons spécifiques aux rôles */
+        .neon-la-d { border-color: var(--neon-la-d); box-shadow: 0 0 25px var(--neon-la-d); } .neon-la-d .role-name { color: var(--neon-la-d); text-shadow: 0 0 10px var(--neon-la-d); }
+        .neon-la-zoz { border-color: var(--neon-la-zoz); box-shadow: 0 0 25px var(--neon-la-zoz); } .neon-la-zoz .role-name { color: var(--neon-la-zoz); text-shadow: 0 0 10px var(--neon-la-zoz); }
+        .neon-ste-marie { border-color: var(--neon-ste-marie); box-shadow: 0 0 25px var(--neon-ste-marie); } .neon-ste-marie .role-name { color: var(--neon-ste-marie); text-shadow: 0 0 10px var(--neon-ste-marie); }
+        .neon-aveugle { border-color: var(--neon-aveugle); box-shadow: 0 0 25px var(--neon-aveugle); } .neon-aveugle .role-name { color: var(--neon-aveugle); text-shadow: 0 0 10px var(--neon-aveugle); }
+        .neon-cloche { border-color: var(--neon-cloche); box-shadow: 0 0 25px var(--neon-cloche); } .neon-cloche .role-name { color: var(--neon-cloche); text-shadow: 0 0 10px var(--neon-cloche); }
+        .neon-capitaine { border-color: var(--neon-capitaine); box-shadow: 0 0 25px var(--neon-capitaine); } .neon-capitaine .role-name { color: var(--neon-capitaine); text-shadow: 0 0 10px var(--neon-capitaine); }
+        .neon-opps { border-color: var(--neon-opps); box-shadow: 0 0 25px var(--neon-opps); } .neon-opps .role-name { color: var(--neon-opps); text-shadow: 0 0 10px var(--neon-opps); }
+        .neon-paf { border-color: var(--neon-paf); box-shadow: 0 0 25px var(--neon-paf); } .neon-paf .role-name { color: var(--neon-paf); text-shadow: 0 0 10px var(--neon-paf); }
+        .neon-kamikaze { border-color: var(--neon-kamikaze); box-shadow: 0 0 25px var(--neon-kamikaze); } .neon-kamikaze .role-name { color: var(--neon-kamikaze); text-shadow: 0 0 10px var(--neon-kamikaze); }
 
-        #overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+        /* Interface globale */
+        #overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom) 20px; text-align: center; }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 500; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: var(--card-bg); padding: 25px; border-radius: 25px; width: 100%; max-width: 400px; border: 1px solid #475569; max-height: 80vh; overflow-y: auto; }
+        .modal-content { background: var(--card-bg); padding: 25px; border-radius: 25px; width: 100%; max-width: 350px; border: 1px solid #475569; max-height: 75vh; overflow-y: auto; }
 
-        .btn-main { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 16px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1.1rem; }
-        input[type="text"] { width: 100%; padding: 15px; border-radius: 12px; border: none; background: #0f172a; color: white; margin-bottom: 15px; font-size: 1rem; border: 1px solid #1e293b; box-sizing: border-box;}
+        .btn-main { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 18px; font-weight: bold; width: 100%; max-width: 330px; cursor: pointer; font-size: 1.1rem; margin-top: 15px; }
+        input[type="text"] { width: 100%; max-width: 330px; padding: 16px; border-radius: 14px; border: 1px solid #1e293b; background: #0f172a; color: white; margin-bottom: 15px; font-size: 1rem; box-sizing: border-box; }
         
-        .zoz-btn { background: #1e293b; color: white; border: 1px solid #334155; padding: 12px; margin: 6px; border-radius: 12px; width: 44%; cursor: pointer; }
-        .zoz-btn.selected { border-color: var(--accent); background: #334155; box-shadow: 0 0 10px var(--accent); }
+        .zoz-btn { background: #1e293b; color: white; border: 1px solid #334155; padding: 12px; margin: 5px; border-radius: 12px; width: 45%; cursor: pointer; font-size: 0.9rem; font-weight: bold; }
+        .zoz-btn.selected { border-color: var(--accent); background: #312e81; box-shadow: 0 0 10px var(--accent); }
     </style>
 </head>
 <body>
 
 <div id="setup-tab" class="tab-content active">
-    <h1>Le Tribunal</h1>
-    <div style="width:100%; max-width:400px;">
+    <h1 style="font-size: 2.2rem; margin: 10px 0;">Le Tribunal</h1>
+    <div style="width:100%; max-width:330px; text-align: center;">
         <input type="text" id="p-name" placeholder="Prénom du joueur...">
         <button class="btn-main" onclick="registerPlayer()">AJOUTER JOUEUR</button>
     </div>
@@ -82,8 +103,8 @@
 </div>
 
 <div id="config-tab" class="tab-content">
-    <h2>Rôles de la session</h2>
-    <div id="role-selector-list" style="width: 100%; max-width: 320px; margin-bottom: 20px;"></div>
+    <h2>Rôles Actifs</h2>
+    <div id="role-selector-list" style="width: 100%; max-width: 320px;"></div>
     <button class="btn-main" onclick="validateAndStart()">DÉMARRER</button>
 </div>
 
@@ -93,42 +114,45 @@
         <button class="btn-tool" onclick="toggleModal('modal-players', true)">👤 JOUEURS</button>
         <button class="btn-tool" onclick="toggleModal('modal-active-roles', true)">📜 RÔLES</button>
     </div>
-    <div id="turn-info" style="margin-top: 20px; font-weight: 800; font-size: 1.3rem; color: var(--accent);"></div>
+    <div id="turn-info" style="margin-top: 20px; font-weight: 800; font-size: 1.5rem; color: var(--accent);"></div>
     <div id="card-container"></div>
-    <div style="width: 85%; max-width: 320px;">
+    <div style="width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
         <button class="btn-main" onclick="drawCardWithAnimation()">PIOCHER UNE CARTE</button>
-        <button onclick="location.reload()" style="background:none; border:none; color:gray; margin-top:20px; width:100%; cursor:pointer; font-size:0.8rem;">✖ FIN DE PARTIE</button>
+        <button onclick="location.reload()" style="background:none; border:none; color:gray; margin-top:15px; cursor:pointer; font-size:0.8rem;">✖ FIN DE PARTIE</button>
     </div>
 </div>
 
 <div id="modal-rules" class="modal"><div class="modal-content">
     <h2>Règles</h2><div style="text-align:left; font-size:0.9rem; line-height:1.5;">
     <p><b style="color:var(--cat1)">⚖️ Accusation :</b> Avocat défend (30s). Vote groupe. Perdant boit double.</p>
-    <p><b style="color:var(--cat2)">🍷 Beverage :</b> Cartes rouges = restent dans le paquet.</p>
+    <p><b style="color:var(--cat2)">🍷 Beverage :</b> Les cartes rouges restent dans le deck.</p>
     </div><button class="btn-main" onclick="toggleModal('modal-rules', false)">RETOUR</button>
 </div></div>
 
 <div id="modal-players" class="modal"><div class="modal-content">
-    <h3>Suivi des Pouvoirs</h3><div id="player-dashboard"></div>
-    <button class="btn-main" style="margin-top:20px;" onclick="toggleModal('modal-players', false)">RETOUR</button>
+    <h3>Charges des Pouvoirs</h3><div id="player-dashboard"></div>
+    <button class="btn-main" onclick="toggleModal('modal-players', false)">RETOUR</button>
 </div></div>
 
 <div id="modal-active-roles" class="modal"><div class="modal-content">
-    <h3>Rôles en jeu</h3><div id="active-roles-list"></div>
-    <button class="btn-main" style="margin-top:20px;" onclick="toggleModal('modal-active-roles', false)">RETOUR</button>
+    <h3>Rôles distribués</h3><div id="active-roles-list"></div>
+    <button class="btn-main" onclick="toggleModal('modal-active-roles', false)">RETOUR</button>
 </div></div>
 
 <div id="overlay">
     <div id="transition-screen">
-        <h2 id="next-player-name" style="font-size: 1.8rem; margin-bottom: 20px;"></h2>
+        <h2 id="next-player-name" style="font-size: 2rem; margin-bottom: 30px;"></h2>
         <button class="btn-main" onclick="revealRoleNow()">DÉVOILER MON RÔLE</button>
     </div>
-    <div id="role-screen" class="role-card-ui" style="display:none;">
-        <div id="overlay-player" style="font-size:0.8rem; opacity:0.5; position:absolute; top:30px; text-transform:uppercase;"></div>
-        <div id="overlay-role" class="role-name"></div>
-        <div id="overlay-desc" class="role-desc"></div>
-        <div id="zoz-choice-container" style="display:none; flex-wrap:wrap; justify-content:center; margin-top:30px;"></div>
-        <button id="overlay-btn" class="btn-main" style="position: absolute; bottom: 30px; width: 80%;" onclick="closeOverlay()">C'EST COMPRIS</button>
+    
+    <div id="role-display-container" style="display:none;">
+        <div id="role-screen" class="role-card-ui">
+            <div id="overlay-player" class="player-info"></div>
+            <div id="overlay-role" class="role-name"></div>
+            <div id="overlay-desc" class="role-desc"></div>
+            <div id="zoz-choice-container" style="display:none; flex-wrap:wrap; justify-content:center; margin-top:20px;"></div>
+        </div>
+        <button id="overlay-btn" class="btn-main" style="margin-top: 25px;" onclick="closeOverlay()">C'EST COMPRIS</button>
     </div>
 </div>
 
@@ -147,59 +171,51 @@
     };
 
     const allRoles = [
-        { name: "La D", uses: 2, desc: "À n’importe quel moment, tu peux servir un shot à qui tu le veux (2 utilisations)." },
-        { name: "La Zoz", uses: 0, desc: "Choisis un partenaire lié. Jamais de boissons entre vous." },
-        { name: "La Sainte Marie", uses: 3, desc: "Trouve les Zoz (3 chances). Si tu réussis, ils boivent." },
+        { name: "La D", uses: 2, desc: "Sers un shot à qui tu veux (2 utilisations)." },
+        { name: "La Zoz", uses: 0, desc: "Choisis un partenaire lié. Pas de boissons entre vous." },
+        { name: "La Sainte Marie", uses: 3, desc: "Trouve les Zoz (3 chances). Succès = Ils boivent." },
         { name: "L'Aveugle", uses: 2, desc: "Sers un verre dosé à l'aveugle (2 utilisations)." },
         { name: "Cloche Brésilienne", uses: 2, desc: "Annule une boisson (1x sur soi, 1x sur autrui)." },
         { name: "Le Cacapitaine", uses: 2, desc: "Change le destinataire d'un verre/shot (2 utilisations)." },
-        { name: "Le Opps", uses: 0, desc: "Tu connais les Zoz. Aide la Sainte Marie." },
-        { name: "Paf", uses: 2, desc: "Prends le contrôle d'une distribution (2 utilisations)." },
+        { name: "Le Opps", uses: 0, desc: "Tu connais les Zoz. Aide la Sainte Marie à les trouver." },
+        { name: "Paf", uses: 2, desc: "Sur un 'distribue...', dis PAF et gère la distribution (2 utilisations)." },
         { name: "Le Kamikaze", uses: 1, desc: "TIC-TAC (10s pour finir son verre). Échec = Tu bois cul-sec." }
     ];
 
     const baseCards = [
-        // ACCUSATIONS (Bleu)
-        {cat:1, text:"Qui est le plus susceptible de texter son ex après 3 verres ?"},
-        {cat:1, text:"Qui est le plus mauvais conducteur du groupe ?"},
-        {cat:1, text:"Qui pourrait participer à une émission de télé-réalité ?"},
-        {cat:1, text:"L'Infiltré : Qui s'incrusterait à un mariage sans être invité ?"},
+        {cat:1, text:"Qui texterait son ex après 3 verres ?"},
+        {cat:1, text:"Qui est le plus mauvais conducteur ?"},
+        {cat:1, text:"Qui pourrait participer à une télé-réalité ?"},
+        {cat:1, text:"L'Infiltré : Qui s'incrusterait à un mariage ?"},
         {cat:1, text:"Le Mytho : Qui ment pour se sortir d'une galère ?"},
         {cat:1, text:"Le Survivor : Qui survivrait le plus longtemps ?"},
         {cat:1, text:"L'innocent : Qui mourrait en premier ?"},
-        {cat:1, text:"Le Mauvais Plan : Tatouage regrettable sur un coup de tête ?"},
-        {cat:1, text:"Le Red Flag : Qui a le pire goût amoureux ?"},
+        {cat:1, text:"Mauvais Plan : Tatouage regrettable ?"},
+        {cat:1, text:"Red Flag : Qui a le pire goût amoureux ?"},
         {cat:1, text:"Stockholm : Qui tombe amoureux de qui l'ignore ?"},
         {cat:1, text:"Morphée : Qui disparaît sans prévenir pour dormir ?"},
         {cat:1, text:"Le Fugitif : Qui part avec les pompes d'un autre ?"},
-        // BEVERAGE (Rouge)
         {cat:2, text:"Bois 2 gorgées"}, {cat:2, text:"Bois 3 gorgées"}, {cat:2, text:"Bois 4 gorgées"},
         {cat:2, text:"Bois 5 gorgées"}, {cat:2, text:"Bois 1 shot"}, {cat:2, text:"Distribue 2 gorgées"},
         {cat:2, text:"Distribue 3 gorgées"}, {cat:2, text:"Distribue 4 gorgées"}, {cat:2, text:"Distribue 5 gorgées"},
         {cat:2, text:"Distribue 1 shot"},
-        // PACTES (Violet)
         {cat:3, text:"(Désigne 3) : Vacances, Business, ou panne sur l'autoroute ?"},
         {cat:3, text:"(Désigne 2) : Sauve l'un d'un incendie, l'autre perd ses cheveux."},
         {cat:3, text:"(Désigne 3) : Île déserte. Mariage, une nuit, ou sacrifice ?"},
-        {cat:3, text:"(Désigne 3) : Prêt 1000€, 5 blagues limites, ou se casser la gueule ?"},
-        {cat:3, text:"(Désigne 3) : Kiss, Marry, Fuck (le groupe choisit)."},
-        {cat:3, text:"Le Swap : Échange ta famille avec l'un et ton compte avec l'autre."},
+        {cat:3, text:"Le Swap : Échange ta famille avec l'un et ton compte bancaire."},
         {cat:3, text:"Les complices : Classe du complice de crime au traître."},
-        // DEFIS (Vert)
         {cat:4, text:"L'idiot : Chaque réponse à une question = boire."},
         {cat:4, text:"Le fou : Désigne 2 personnes, elles échangent leurs verres."},
-        {cat:4, text:"Le Sommelier : Remplis le prochain verre d'un joueur (doses libres)."},
+        {cat:4, text:"Le Sommelier : Remplis le prochain verre d'un joueur."},
         {cat:4, text:"L'ivrogne : Les autres dosent ton prochain verre."},
         {cat:4, text:"Le Muet : Silence jusqu'à ton prochain tour."},
-        {cat:4, text:"Cascade : Tout le monde boit, tu termines (+2 gorgées)."},
+        {cat:4, text:"Cascade : Tout le monde boit, tu termines (+2)."},
         {cat:4, text:"Le Miroir : Choisis un jumeau. Verres liés."},
         {cat:4, text:"Le Sniper : POUCE ! Le dernier boit 3."},
         {cat:4, text:"Le Try Harder : POUCE ! Le premier boit 3."},
         {cat:4, text:"Le Roi : Instaure une règle jusqu'à la fin."},
         {cat:4, text:"Le Géolier : Lie 2 personnes (elles boivent ensemble)."},
-        {cat:4, text:"Le Kamikaze : Shot pour forcer 2 personnes à finir leur verre."},
         {cat:4, text:"Le T-Rex : Coudes collés au corps. Erreur = 2 gorgées."},
-        {cat:4, text:"Le Maître des Prénoms : 'Chef' ou 'Champion' obligatoire."},
         {cat:4, text:"Le Vote Blanc : Plus de vote lors des plaidoiries."}
     ];
 
@@ -216,10 +232,11 @@
     function showRoleConfig() {
         document.getElementById('setup-tab').classList.remove('active');
         document.getElementById('config-tab').classList.add('active');
-        document.getElementById('role-selector-list').innerHTML = allRoles.map((r, i) => `
+        const rolesList = document.getElementById('role-selector-list');
+        rolesList.innerHTML = allRoles.map((r, i) => `
             <div style="display:flex; justify-content:space-between; background:#0f172a; padding:12px; margin:8px 0; border-radius:12px; border:1px solid #1e293b;">
                 <label style="font-weight:bold;">${r.name}</label>
-                <input type="checkbox" id="role-${i}" checked>
+                <input type="checkbox" id="role-${i}" checked style="width:20px; height:20px;">
             </div>
         `).join('');
     }
@@ -267,7 +284,7 @@
         dash.innerHTML = players.map(p => {
             const r = rolesData[p];
             let tokens = '';
-            for(let i=1; i<=r.uses; i++) tokens += `<button style="background:var(--cat4);border:none;color:white;padding:5px;border-radius:4px;margin:2px;${r.currentUses >= i ? 'opacity:0.3;text-decoration:line-through;' : ''}" onclick="usePower('${p}', ${i})">Charge ${i}</button>`;
+            for(let i=1; i<=r.uses; i++) tokens += `<button style="background:var(--cat4);border:none;color:white;padding:6px;border-radius:5px;margin:2px;${r.currentUses >= i ? 'opacity:0.3;text-decoration:line-through;' : ''}" onclick="usePower('${p}', ${i})">Charge ${i}</button>`;
             return `<div style="padding:12px; border-bottom:1px solid #1e293b; display:flex; justify-content:space-between; align-items:center;">
                 <div><strong>${p}</strong><br><small style="color:var(--accent)">${r.name}</small></div>
                 <div>${tokens}</div>
@@ -281,8 +298,8 @@
         listContainer.innerHTML = assignedRoles.map(roleName => {
             const roleInfo = allRoles.find(r => r.name === roleName);
             return `<div style="border-bottom:1px solid #1e293b; padding:10px 0; text-align:left;">
-                <b style="text-transform:uppercase; color:var(--accent);">${roleName}</b>
-                <p style="font-size:0.8rem; opacity:0.8; margin:5px 0 0 0;">${roleInfo.desc}</p>
+                <b style="text-transform:uppercase; color:var(--accent); font-size:0.85rem;">${roleName}</b>
+                <p style="font-size:0.75rem; opacity:0.8; margin:4px 0 0 0;">${roleInfo.desc}</p>
             </div>`;
         }).join('');
     }
@@ -290,7 +307,7 @@
     function usePower(p, i) { rolesData[p].currentUses = i; updateDashboard(); }
 
     function prepareTransition() {
-        document.getElementById('role-screen').style.display = 'none';
+        document.getElementById('role-display-container').style.display = 'none';
         document.getElementById('transition-screen').style.display = 'flex';
         document.getElementById('next-player-name').innerText = "À ton tour, " + players[currentIdx];
     }
@@ -299,12 +316,15 @@
         const name = players[currentIdx];
         const data = rolesData[name];
         document.getElementById('transition-screen').style.display = 'none';
-        const roleScreen = document.getElementById('role-screen');
-        roleScreen.style.display = 'flex';
-        roleScreen.className = "role-card-ui " + (neonClasses[data.name] || "");
+        document.getElementById('role-display-container').style.display = 'block';
+        
+        const roleCard = document.getElementById('role-screen');
+        roleCard.className = "role-card-ui " + (neonClasses[data.name] || "");
+        
         document.getElementById('overlay-player').innerText = "IDENTITÉ DE " + name;
         document.getElementById('overlay-role').innerText = data.name;
         document.getElementById('overlay-desc').innerText = data.desc;
+        
         const zozDiv = document.getElementById('zoz-choice-container');
         zozDiv.style.display = "none"; zozDiv.innerHTML = "";
         if(data.name === "La Zoz") {
@@ -313,6 +333,7 @@
             zozDiv.innerHTML = players.map(p => `<button class="zoz-btn" id="zoz-${p}" onclick="selectZoz('${p}')">${p}</button>`).join('');
         } else if(data.name === "Le Opps") {
             document.getElementById('overlay-desc').innerText += `\n\nLES ZOZ SONT : ${zozPartners.join(" et ")}`;
+            document.getElementById('overlay-btn').style.display = "block";
         } else {
             document.getElementById('overlay-btn').style.display = "block";
         }
@@ -350,7 +371,7 @@
         const el = document.createElement('div');
         el.className = `game-card cat-${d.cat}`;
         const lbls = ["", "L'ACCUSATION", "BEVERAGE", "LE PACTE DU DIABLE", "DÉFI FLASH"];
-        el.innerHTML = `<div class="cat-label">${lbls[d.cat]}</div><div style="font-size:1.35rem;font-weight:700">${d.text}</div>`;
+        el.innerHTML = `<div class="cat-label">${lbls[d.cat]}</div><div style="font-size:1.3rem;font-weight:700">${d.text}</div>`;
         return el;
     }
 
