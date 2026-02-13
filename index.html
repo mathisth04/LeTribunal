@@ -86,8 +86,8 @@
     <div class="modal-inner">
         <h2>Règles du Jeu</h2>
         <div style="text-align: left; line-height: 1.6; font-size: 0.95rem;">
-            <p><b style="color:var(--cat1)">Accusation :</b> Désignez le coupable. Un avocat peut le défendre pendant 30s. Votez. Si l'avocat perd, il boit double avec son client.</p>
-            <p><b style="color:var(--cat2)">Beverage :</b> Les cartes rouges restent dans le paquet toute la partie.</p>
+            <p><b style="color:var(--cat1)">Avocat du Diable :</b> Insurgez vous, si quelqu'un est accusé à tord ou si vous voulez défendre quiconque, vous avez 30s. Votez. Si vous perdez le vote, vous buvez double avec votre client.</p>
+            <p><b style="color:var(--cat2)">Beverage :</b> Les cartes Beverage restent dans le paquet toute la partie.</p>
             <p><b style="color:var(--cat4)">Pouvoirs :</b> Utilisez vos capacités spéciales via le bouton "Joueurs".</p>
         </div>
         <button class="btn-main" style="margin-top:20px;" onclick="toggleModal('modal-rules', false)">RETOUR</button>
@@ -126,14 +126,14 @@
 
     const allRoles = [
         { name: "La D", uses: 2, desc: "À n’importe quel moment dans la partie, cette personne peut servir un shot à qui elle le veut (utilisable 2 fois sur 2 personnes différentes)." },
-        { name: "La Zoz", uses: 0, desc: "Au début de la partie, elle choisit une personne avec qui elle est lié, ces deux personnes se connaissent et ne doivent pas se distribuer mutuellement de gorgées." },
-        { name: "La Sainte Marie", uses: 3, desc: "Elle doit trouver qui sont les personnes liées (3 chances). Si elle trouve, les amoureux boivent un shot chacun." },
+        { name: "La Zoz", uses: 0, desc: "Au début de la partie, elle choisit deux personne à lié (possiblement elle même), ces deux personnes se connaissent et ne doivent pas se distribuer mutuellement de gorgées." },
+        { name: "La Sainte Marie", uses: 3, desc: "Elle doit trouver qui sont les personnes liées (3 chances). Si elle trouve, les amoureux boivent un shot chacun. A la première erreur, elle boit 4 gorgées, à la deuxième un shot et à la 3ème...2 shot." },
         { name: "L'Aveugle", uses: 2, desc: "À n’importe quel moment, cette personne peut servir un verre dosé à « l’aveugle » (utilisable 2 fois)." },
-        { name: "Cloche Brésilienne", uses: 2, desc: "Cette personne peut empêcher qui elle désire de boire (y compris elle-même). Utilisable 1x sur soi, 1x sur un autre." },
+        { name: "Cloche Brésilienne", uses: 2, desc: "Cette personne peut empêcher qui elle désire de boire (y compris elle-même). Utilisable 1x max sur soi, deux fois au total" },
         { name: "Le Cacapitaine", uses: 2, desc: "Deux fois dans la partie, cette personne peut décider de changer le destinataire d’un verre, d’une gorgée ou d’un shot." },
         { name: "Le Opps", uses: 0, desc: "Tu connais les Zoz. Ton rôle est de faire découvrir à la Sainte Marie qui ils sont sans te faire griller." },
-        { name: "Paf", uses: 2, desc: "Pendant les cartes 'Beverage/distribue', tu peux dire PAF et distribuer toi-même les gorgées (utilisable 2 fois)." },
-        { name: "Le Kamikaze", uses: 1, desc: "Dis TIC-TAC à quelqu'un. Il a 10s pour finir son verre. S'il réussit, TU bois cul-sec. S'il échoue, il boit tout." }
+        { name: "Paf", uses: 2, desc: "Pendant les cartes 'Beverage', tu peux dire PAF et distribuer toi-même les gorgées (utilisable 2 fois)." },
+        { name: "Le Kamikaze", uses: 1, desc: "Dis TIC-TAC à quelqu'un. Il a 10s pour finir son verre. S'il réussit, TU bois cul-sec. S'il échoue, il se prend un shot." }
     ];
 
     const duplicatables = ["La D", "L'Aveugle", "Cloche Brésilienne", "Le Cacapitaine", "Paf", "Le Kamikaze"];
@@ -315,3 +315,4 @@
 </script>
 </body>
 </html>
+
