@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Tribunal">
     
-    <title>Le Tribunal des Mythes - iPhone 14 Final</title>
+    <title>Le Tribunal des Mythes - iPhone 14 Final Fix</title>
     <style>
         :root {
             --bg: #020617; --card-bg: #0f172a; --text: #f8fafc; --accent: #6366f1;
@@ -26,7 +26,7 @@
             box-sizing: border-box;
         }
 
-        /* Barre de navigation */
+        /* Navigation */
         .top-nav { display: flex; gap: 5px; padding: 10px; background: rgba(2, 6, 23, 0.95); justify-content: center; border-bottom: 1px solid #1e293b; z-index: 50; }
         .btn-tool { background: #0f172a; color: white; border: 1px solid #334155; padding: 8px 10px; border-radius: 10px; cursor: pointer; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; }
 
@@ -46,20 +46,26 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.8);
         }
 
-        /* --- DESIGN NEON CARTES DE RÔLES (Correction bouton) --- */
+        /* --- OVERLAY DE REVELATION (Couvre tout) --- */
+        #overlay { 
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg); z-index: 2000; flex-direction: column; 
+            align-items: center; justify-content: center; padding: 20px; 
+        }
+
         #role-display-area {
-            display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 80vh;
+            display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%;
         }
 
         .role-card-ui { 
-            width: 85vw; max-width: 330px; height: 60vh; background: #020617; border-radius: 35px; 
+            width: 85vw; max-width: 330px; height: 55vh; background: #020617; border-radius: 35px; 
             border: 5px solid var(--accent); display: flex; flex-direction: column; 
             justify-content: center; align-items: center; padding: 25px; text-align: center; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.9); position: relative;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9);
         }
 
-        .role-name { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; margin-bottom: 15px; line-height: 1; }
-        .role-desc { font-size: 1rem; color: #ffffff; line-height: 1.4; margin-bottom: 10px; }
+        .role-name { font-size: 2.1rem; font-weight: 900; text-transform: uppercase; margin-bottom: 15px; line-height: 1; }
+        .role-desc { font-size: 1rem; color: #ffffff; line-height: 1.4; }
         .player-info { font-size: 0.75rem; opacity: 0.5; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
 
         /* Néons */
@@ -73,26 +79,24 @@
         .neon-paf { border-color: var(--neon-paf); box-shadow: 0 0 20px var(--neon-paf); } .neon-paf .role-name { color: var(--neon-paf); }
         .neon-kamikaze { border-color: var(--neon-kamikaze); box-shadow: 0 0 20px var(--neon-kamikaze); } .neon-kamikaze .role-name { color: var(--neon-kamikaze); }
 
-        /* Animations cartes jeu */
+        /* Boutons */
+        .btn-main { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 18px; font-weight: bold; width: 100%; max-width: 330px; cursor: pointer; font-size: 1.1rem; }
+        input[type="text"] { width: 100%; max-width: 330px; padding: 16px; border-radius: 14px; border: 1px solid #1e293b; background: #0f172a; color: white; margin-bottom: 15px; font-size: 1rem; box-sizing: border-box; }
+        
+        .zoz-btn { background: #1e293b; color: white; border: 1px solid #334155; padding: 12px; margin: 4px; border-radius: 10px; width: 45%; cursor: pointer; font-size: 0.8rem; }
+        .zoz-btn.selected { border-color: var(--accent); background: #312e81; }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--card-bg); padding: 25px; border-radius: 25px; width: 100%; max-width: 350px; border: 1px solid #475569; max-height: 70vh; overflow-y: auto; }
+        
         .slide-out { transform: translateY(-130%) rotate(-10deg); opacity: 0; }
         .slide-in { transform: translateY(100%) scale(0.9); opacity: 0; }
         .active-card { transform: translateY(0) scale(1); opacity: 1; }
-
         .cat-label { font-size: 0.85rem; font-weight: 900; letter-spacing: 2px; margin-bottom: 25px; text-transform: uppercase; }
         .cat-1 { border-color: var(--cat1); } .cat-1 .cat-label { color: var(--cat1); }
         .cat-2 { border-color: var(--cat2); } .cat-2 .cat-label { color: var(--cat2); }
         .cat-3 { border-color: var(--cat3); } .cat-3 .cat-label { color: var(--cat3); }
         .cat-4 { border-color: var(--cat4); } .cat-4 .cat-label { color: var(--cat4); }
-
-        /* Boutons */
-        .btn-main { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 18px; font-weight: bold; width: 100%; max-width: 330px; cursor: pointer; font-size: 1.1rem; z-index: 1100; }
-        input[type="text"] { width: 100%; max-width: 330px; padding: 16px; border-radius: 14px; border: 1px solid #1e293b; background: #0f172a; color: white; margin-bottom: 15px; font-size: 1rem; box-sizing: border-box; }
-        .zoz-btn { background: #1e293b; color: white; border: 1px solid #334155; padding: 10px; margin: 4px; border-radius: 10px; width: 45%; cursor: pointer; font-size: 0.8rem; }
-        .zoz-btn.selected { border-color: var(--accent); background: #312e81; }
-
-        #overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 500; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: var(--card-bg); padding: 25px; border-radius: 25px; width: 100%; max-width: 350px; border: 1px solid #475569; max-height: 70vh; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -186,22 +190,43 @@
     ];
 
     const baseCards = [
-        {cat:1, text:"Qui texterait son ex après 3 verres ?"},
-        {cat:1, text:"Qui est le plus mauvais conducteur ?"},
-        {cat:1, text:"L'Infiltré : Qui s'incrusterait à un mariage ?"},
-        {cat:1, text:"Le Mytho : Qui ment pour se sortir d'une galère ?"},
-        {cat:1, text:"Le Survivor : Qui survivrait le plus longtemps ?"},
-        {cat:2, text:"Bois 2 gorgées"}, {cat:2, text:"Bois 5 gorgées"}, {cat:2, text:"Bois 1 shot"},
-        {cat:2, text:"Distribue 3 gorgées"}, {cat:2, text:"Distribue 1 shot"},
+        {cat:1, text:"Qui est le plus susceptible de texter son ex après 3 verres ?"},
+        {cat:1, text:"Qui est le plus mauvais conducteur du groupe ?"},
+        {cat:1, text:"Qui pourrait participer à une émission de télé-réalité ?"},
+        {cat:1, text:"L'Infiltré : Qui s'incrusterait à un mariage sans invitation ?"},
+        {cat:1, text:"Le Mytho : Qui ment avec un calme olympien pour se sortir d'une galère ?"},
+        {cat:1, text:"Le Survivor : Qui survivrait le plus longtemps dans un film d'horreur ?"},
+        {cat:1, text:"L'innocent : Qui mourrait en premier dans un film d'horreur ?"},
+        {cat:1, text:"Le Mauvais Plan : Qui finirait avec un tatouage regrettable sur un coup de tête ?"},
+        {cat:1, text:"Le Red Flag : Qui a le pire goût amoureux ?"},
+        {cat:1, text:"Le Syndrome de Stockholm : Qui tomberait amoureux de qui l'ignore ?"},
+        {cat:1, text:"Morphée : Qui disparaît sans prévenir pour dormir ?"},
+        {cat:1, text:"Le Fugitif : Qui part avec les pompes d'un autre ?"},
+        {cat:2, text:"Bois 2 gorgées"}, {cat:2, text:"Bois 3 gorgées"}, {cat:2, text:"Bois 4 gorgées"},
+        {cat:2, text:"Bois 5 gorgées"}, {cat:2, text:"Bois 1 shot"}, {cat:2, text:"Distribue 2 gorgées"},
+        {cat:2, text:"Distribue 3 gorgées"}, {cat:2, text:"Distribue 4 gorgées"}, {cat:2, text:"Distribue 5 gorgées"},
+        {cat:2, text:"Distribue 1 shot"},
         {cat:3, text:"(Désigne 3) : Vacances, Business, ou panne sur l'autoroute ?"},
+        {cat:3, text:"(Désigne 2) : Sauve l'un d'un incendie, l'autre perd ses cheveux."},
+        {cat:3, text:"(Désigne 3) : Île déserte. Mariage, une nuit, ou sacrifice ?"},
+        {cat:3, text:"(Désigne 3) : Prêt 1000€, 5 blagues limites, ou se casser la gueule ?"},
         {cat:3, text:"Le Swap : Échange ta famille avec l'un et ton compte bancaire."},
-        {cat:3, text:"Les complices : Classe 3 personnes (du complice au traître)."},
+        {cat:3, text:"Les complices : Classe du complice de crime au traître."},
         {cat:4, text:"L'idiot : Chaque réponse à une question = boire."},
         {cat:4, text:"Le fou : Désigne 2 personnes, elles échangent leurs verres."},
+        {cat:4, text:"Le Sommelier : Remplis le prochain verre d'un joueur."},
+        {cat:4, text:"L'ivrogne : Les autres dosent ton prochain verre."},
         {cat:4, text:"Le Muet : Silence jusqu'à ton prochain tour."},
+        {cat:4, text:"Cascade : Tout le monde boit. Tu décides de la fin (+2)."},
+        {cat:4, text:"Le Miroir : Choisis un jumeau. Verres liés."},
         {cat:4, text:"Le Sniper : POUCE ! Le dernier boit 3."},
+        {cat:4, text:"Le Try Harder : POUCE ! Le premier boit 3."},
         {cat:4, text:"Le Roi : Instaure une règle jusqu'à la fin."},
-        {cat:4, text:"Le T-Rex : Coudes collés au corps. Erreur = 2."}
+        {cat:4, text:"Le Géolier : Lie 2 personnes (elles boivent ensemble)."},
+        {cat:4, text:"Le Kamikaze : Shot pour forcer 2 personnes à finir leur verre."},
+        {cat:4, text:"Le T-Rex : Coudes collés au corps. Erreur = 2."},
+        {cat:4, text:"Le Maître des Prénoms : Appelle tout le monde Chef ou Champion."},
+        {cat:4, text:"Le Vote Blanc : Tu n'as plus le droit de voter lors des plaidoiries."}
     ];
 
     function registerPlayer() {
@@ -269,7 +294,7 @@
         dash.innerHTML = players.map(p => {
             const r = rolesData[p];
             let tokens = '';
-            for(let i=1; i<=r.uses; i++) tokens += `<button style="background:var(--cat4);padding:6px;border-radius:5px;margin:2px;border:none;color:white;${r.currentUses >= i ? 'opacity:0.3;text-decoration:line-through;' : ''}" onclick="usePower('${p}', ${i})">${i}</button>`;
+            for(let i=1; i<=r.uses; i++) tokens += `<button style="background:var(--cat4);padding:6px;border-radius:5px;margin:2px;border:none;color:white;${r.currentUses >= i ? 'opacity:0.3;' : ''}" onclick="usePower('${p}', ${i})">${i}</button>`;
             return `<div style="padding:10px; border-bottom:1px solid #1e293b; display:flex; justify-content:space-between;">
                 <span><b>${p}</b><br><small>${r.name}</small></span>
                 <div>${tokens}</div>
@@ -292,98 +317,4 @@
     function usePower(p, i) { rolesData[p].currentUses = i; updateDashboard(); }
 
     function prepareTransition() {
-        document.getElementById('role-display-area').style.display = 'none';
-        document.getElementById('transition-screen').style.display = 'flex';
-        document.getElementById('next-player-name').innerText = "À ton tour, " + players[currentIdx];
-    }
-
-    function revealRoleNow() {
-        const name = players[currentIdx];
-        const data = rolesData[name];
-        document.getElementById('transition-screen').style.display = 'none';
-        document.getElementById('role-display-area').style.display = 'flex';
-        
-        const roleCard = document.getElementById('role-screen');
-        roleCard.className = "role-card-ui " + (neonClasses[data.name] || "");
-        
-        document.getElementById('overlay-player').innerText = "IDENTITÉ DE " + name;
-        document.getElementById('overlay-role').innerText = data.name;
-        document.getElementById('overlay-desc').innerText = data.desc;
-        
-        const zozDiv = document.getElementById('zoz-choice-container');
-        zozDiv.style.display = "none"; zozDiv.innerHTML = "";
-        
-        document.getElementById('overlay-btn').style.display = "block";
-
-        if(data.name === "La Zoz") {
-            document.getElementById('overlay-btn').style.display = "none";
-            zozDiv.style.display = "flex";
-            zozDiv.innerHTML = players.map(p => `<button class="zoz-btn" id="zoz-${p}" onclick="selectZoz('${p}')">${p}</button>`).join('');
-        } else if(data.name === "Le Opps") {
-            document.getElementById('overlay-desc').innerText += `\n\nLES ZOZ SONT : ${zozPartners.join(" et ")}`;
-        }
-    }
-
-    function selectZoz(p) {
-        if(zozPartners.includes(p)) zozPartners = zozPartners.filter(x => x !== p);
-        else if(zozPartners.length < 2) zozPartners.push(p);
-        document.querySelectorAll('.zoz-btn').forEach(b => b.classList.remove('selected'));
-        zozPartners.forEach(x => document.getElementById(`zoz-${x}`)?.classList.add('selected'));
-        document.getElementById('overlay-btn').style.display = (zozPartners.length === 2) ? "block" : "none";
-    }
-
-    function closeOverlay() {
-        document.getElementById('zoz-choice-container').innerHTML = "";
-        currentIdx++;
-        if(currentIdx < players.length) prepareTransition();
-        else {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('config-tab').classList.remove('active');
-            document.getElementById('game-tab').classList.add('active');
-            deck = [...baseCards]; currentIdx = 0; spawnInitialCard();
-        }
-    }
-
-    function spawnInitialCard() {
-        const card = getNextCardData();
-        const el = createCardElement(card);
-        el.classList.add('active-card');
-        document.getElementById('card-container').appendChild(el);
-        document.getElementById('turn-info').innerText = players[currentIdx];
-    }
-
-    function createCardElement(d) {
-        const el = document.createElement('div');
-        el.className = `game-card cat-${d.cat}`;
-        const lbls = ["", "L'ACCUSATION", "BEVERAGE", "LE PACTE DU DIABLE", "DÉFI FLASH"];
-        el.innerHTML = `<div class="cat-label">${lbls[d.cat]}</div><div style="font-size:1.3rem;font-weight:700">${d.text}</div>`;
-        return el;
-    }
-
-    function getNextCardData() {
-        if(deck.length === 0) deck = [...baseCards];
-        const rIdx = Math.floor(Math.random() * deck.length);
-        const c = deck[rIdx];
-        if(c.cat !== 2) deck.splice(rIdx, 1);
-        return c;
-    }
-
-    function drawCardWithAnimation() {
-        if(isAnimating) return;
-        isAnimating = true;
-        const container = document.getElementById('card-container');
-        const old = container.querySelector('.active-card');
-        currentIdx = (currentIdx + 1) % players.length;
-        const next = createCardElement(getNextCardData());
-        next.classList.add('slide-in');
-        container.appendChild(next);
-        setTimeout(() => {
-            if(old) { old.classList.remove('active-card'); old.classList.add('slide-out'); }
-            next.classList.remove('slide-in'); next.classList.add('active-card');
-            document.getElementById('turn-info').innerText = players[currentIdx];
-        }, 50);
-        setTimeout(() => { if(old) old.remove(); isAnimating = false; }, 650);
-    }
-</script>
-</body>
-</html>
+        document.getElementById('role-display-area').style.display = '
