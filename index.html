@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Tribunal - Final Fix</title>
+    <title>Le Tribunal - Rôles Hiérarchisés</title>
     <style>
         :root {
             --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc; --accent: #6366f1;
@@ -112,16 +112,45 @@
     }
 
     function validateAndStart() {
-        let pool = [];
-        allRoles.forEach((r, i) => { if(document.getElementById(`role-${i}`).checked) pool.push(r); });
-        pool = pool.sort(() => 0.5 - Math.random());
-        
-        let finalRoles = pool.slice(0, players.length);
-        while(finalRoles.length < players.length) {
-            finalRoles.push({name: "Villageois", desc: "Tu n'as pas de pouvoir spécial."});
+        let selectedPool = [];
+        allRoles.forEach((r, i) => { if(document.getElementById(`role-${i}`).checked) selectedPool.push(r); });
+
+        // On définit les rôles finaux
+        let rolesToAssign = [...selectedPool].sort(() => 0.5 - Math.random()).slice(0, players.length);
+        while(rolesToAssign.length < players.length) {
+            rolesToAssign.push({name: "Villageois", desc: "Tu n'as pas de pouvoir spécial."});
         }
-        finalRoles = finalRoles.sort(() => 0.5 - Math.random());
-        players.forEach((p, i) => { rolesData[p] = finalRoles[i]; });
+
+        // --- LOGIQUE DE DISTRIBUTION SOUS CONTRAINTE ---
+        let finalMapping = new Array(players.length).fill(null);
+        let playerIndices = Array.from({length: players.length}, (_, i) => i);
+        
+        const hasZoz = rolesToAssign.some(r => r.name === "La Zoz");
+        const hasOpps = rolesToAssign.some(r => r.name === "Le Opps");
+
+        if (hasZoz && hasOpps) {
+            // 1. Placer la Zoz n'importe où SAUF à la dernière place
+            let zozIdx = Math.floor(Math.random() * (players.length - 1));
+            let zozRole = rolesToAssign.splice(rolesToAssign.findIndex(r => r.name === "La Zoz"), 1)[0];
+            finalMapping[zozIdx] = zozRole;
+            playerIndices.splice(playerIndices.indexOf(zozIdx), 1);
+
+            // 2. Placer le Opps obligatoirement APRES la Zoz
+            let possibleOppsIndices = playerIndices.filter(i => i > zozIdx);
+            let oppsIdx = possibleOppsIndices[Math.floor(Math.random() * possibleOppsIndices.length)];
+            let oppsRole = rolesToAssign.splice(rolesToAssign.findIndex(r => r.name === "Le Opps"), 1)[0];
+            finalMapping[oppsIdx] = oppsRole;
+            playerIndices.splice(playerIndices.indexOf(oppsIdx), 1);
+        }
+
+        // 3. Remplir le reste aléatoirement
+        rolesToAssign = rolesToAssign.sort(() => 0.5 - Math.random());
+        playerIndices.forEach((pIdx, i) => {
+            finalMapping[pIdx] = rolesToAssign[i];
+        });
+
+        rolesData = {};
+        players.forEach((p, i) => { rolesData[p] = finalMapping[i]; });
 
         currentIdx = 0;
         zozPartners = [];
@@ -138,13 +167,6 @@
     function revealRoleNow() {
         const name = players[currentIdx];
         const data = rolesData[name];
-
-        if(data.name === "Le Opps" && zozPartners.length < 2 && Object.values(rolesData).some(r => r.name === "La Zoz")) {
-            alert("L'Opps doit attendre le choix de la Zoz. Passe le téléphone !");
-            players.push(players.splice(currentIdx, 1)[0]);
-            prepareTransition();
-            return;
-        }
 
         document.getElementById('transition-screen').style.display = 'none';
         document.getElementById('role-screen').style.display = 'block';
@@ -174,12 +196,10 @@
     }
 
     function closeOverlay() {
-        // --- NETTOYAGE CRITIQUE ---
         document.getElementById('zoz-choice-container').style.display = "none";
         document.getElementById('zoz-choice-container').innerHTML = "";
         document.getElementById('overlay-btn').style.display = "block";
         document.getElementById('overlay-btn').innerText = "J'AI COMPRIS";
-        // -------------------------
 
         currentIdx++;
         if(currentIdx < players.length) {
@@ -196,6 +216,8 @@
         const cards = [
             {cat:1, text:"Qui texterait son ex après 3 verres ?"},
             {cat:1, text:"Qui est le plus mauvais conducteur ?"},
+            {cat:1, text:"Qui pourrait faire de la télé-réalité ?"},
+            {cat:1, text:"L'Infiltré : Qui s'incrusterait à un mariage ?"},
             {cat:2, text:"Bois 3 gorgées"}, {cat:2, text:"Distribue 1 shot"},
             {cat:3, text:"(Désigne 3) : Vacances, Business, ou panne sur l'autoroute ?"},
             {cat:4, text:"Le Sniper : POUCE ! Le dernier boit 3."}
