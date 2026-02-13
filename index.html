@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Tribunal">
-    
-    <title>Le Tribunal des Mythes - Édition Intégrale</title>
+    <title>Le Tribunal des Mythes</title>
     <style>
         :root {
             --bg: #020617; --card-bg: #0f172a; --text: #f8fafc; --accent: #6366f1;
@@ -17,73 +15,13 @@
             --neon-aveugle: #818cf8; --neon-cloche: #4ade80; --neon-capitaine: #fb923c;
             --neon-opps: #a855f7; --neon-paf: #fb7185; --neon-kamikaze: #2dd4bf;
         }
-        
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
-            background: var(--bg); color: var(--text); 
-            margin: 0; display: flex; flex-direction: column; height: 100vh; 
-            overflow: hidden; padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
-            box-sizing: border-box;
-        }
-
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0; box-sizing: border-box; }
         .top-nav { display: flex; gap: 5px; padding: 10px; background: rgba(2, 6, 23, 0.95); justify-content: center; border-bottom: 1px solid #1e293b; z-index: 50; }
         .btn-tool { background: #0f172a; color: white; border: 1px solid #334155; padding: 8px 10px; border-radius: 10px; cursor: pointer; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; }
-
         .tab-content { display: none; flex-direction: column; align-items: center; padding: 20px; flex: 1; overflow-y: auto; }
         .tab-content.active { display: flex; }
-
-        #card-container { 
-            position: relative; width: 85vw; max-width: 330px; height: 50vh; 
-            margin: auto; perspective: 1200px; 
-        }
-        .game-card { 
-            position: absolute; inset: 0; background: var(--card-bg); border-radius: 35px; 
-            border: 4px solid var(--text); display: flex; flex-direction: column; 
-            justify-content: center; padding: 25px; text-align: center; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
-        }
-
-        #overlay { 
-            display: none; position: fixed; inset: 0; 
-            background: var(--bg); z-index: 2000; 
-            flex-direction: column; align-items: center; justify-content: center;
-        }
-
-        #role-display-area {
-            display: none; flex-direction: column; align-items: center; width: 100%;
-        }
-
-        .role-card-ui { 
-            width: 85vw; max-width: 330px; height: 55vh; background: #020617; border-radius: 35px; 
-            border: 5px solid var(--accent); display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; padding: 25px; text-align: center; 
-            box-shadow: 0 0 30px rgba(0,0,0,1); margin-bottom: 20px;
-        }
-
-        #overlay-btn { position: relative; z-index: 2100; width: 80vw; max-width: 300px; margin-top: 10px; }
-
-        .role-name { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; margin-bottom: 15px; line-height: 1; }
-        .role-desc { font-size: 1rem; color: #ffffff; line-height: 1.4; }
-        .player-info { font-size: 0.75rem; opacity: 0.5; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
-
-        .neon-la-d { border-color: var(--neon-la-d); box-shadow: 0 0 20px var(--neon-la-d); } .neon-la-d .role-name { color: var(--neon-la-d); }
-        .neon-la-zoz { border-color: var(--neon-la-zoz); box-shadow: 0 0 20px var(--neon-la-zoz); } .neon-la-zoz .role-name { color: var(--neon-la-zoz); }
-        .neon-ste-marie { border-color: var(--neon-ste-marie); box-shadow: 0 0 20px var(--neon-ste-marie); } .neon-ste-marie .role-name { color: var(--neon-ste-marie); }
-        .neon-aveugle { border-color: var(--neon-aveugle); box-shadow: 0 0 20px var(--neon-aveugle); } .neon-aveugle .role-name { color: var(--neon-aveugle); }
-        .neon-cloche { border-color: var(--neon-cloche); box-shadow: 0 0 20px var(--neon-cloche); } .neon-cloche .role-name { color: var(--neon-cloche); }
-        .neon-capitaine { border-color: var(--neon-capitaine); box-shadow: 0 0 20px var(--neon-capitaine); } .neon-capitaine .role-name { color: var(--neon-capitaine); }
-        .neon-opps { border-color: var(--neon-opps); box-shadow: 0 0 20px var(--neon-opps); } .neon-opps .role-name { color: var(--neon-opps); }
-        .neon-paf { border-color: var(--neon-paf); box-shadow: 0 0 20px var(--neon-paf); } .neon-paf .role-name { color: var(--neon-paf); }
-        .neon-kamikaze { border-color: var(--neon-kamikaze); box-shadow: 0 0 20px var(--neon-kamikaze); } .neon-kamikaze .role-name { color: var(--neon-kamikaze); }
-
-        .btn-main { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 18px; font-weight: bold; width: 100%; max-width: 330px; cursor: pointer; font-size: 1.1rem; }
-        input[type="text"] { width: 100%; max-width: 330px; padding: 16px; border-radius: 14px; border: 1px solid #1e293b; background: #0f172a; color: white; margin-bottom: 15px; font-size: 1rem; box-sizing: border-box; }
-        .zoz-btn { background: #1e293b; color: white; border: 1px solid #334155; padding: 10px; margin: 4px; border-radius: 10px; width: 45%; cursor: pointer; font-size: 0.8rem; }
-        .zoz-btn.selected { border-color: var(--accent); background: #312e81; }
-
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: var(--card-bg); padding: 25px; border-radius: 25px; width: 100%; max-width: 350px; border: 1px solid #475569; max-height: 70vh; overflow-y: auto; }
-        
+        #card-container { position: relative; width: 85vw; max-width: 330px; height: 50vh; margin: auto; perspective: 1200px; }
+        .game-card { position: absolute; inset: 0; background: var(--card-bg); border-radius: 35px; border: 4px solid var(--text); display: flex; flex-direction: column; justify-content: center; padding: 25px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.8); transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s; }
         .slide-out { transform: translateY(-130%) rotate(-10deg); opacity: 0; }
         .slide-in { transform: translateY(100%) scale(0.9); opacity: 0; }
         .active-card { transform: translateY(0) scale(1); opacity: 1; }
@@ -92,6 +30,27 @@
         .cat-2 { border-color: var(--cat2); } .cat-2 .cat-label { color: var(--cat2); }
         .cat-3 { border-color: var(--cat3); } .cat-3 .cat-label { color: var(--cat3); }
         .cat-4 { border-color: var(--cat4); } .cat-4 .cat-label { color: var(--cat4); }
+        #overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 2000; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        #role-display-area { display: none; flex-direction: column; align-items: center; width: 100%; }
+        .role-card-ui { width: 85vw; max-width: 330px; height: 55vh; background: #020617; border-radius: 35px; border: 5px solid var(--accent); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 25px; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,1); margin-bottom: 20px; }
+        .role-name { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; margin-bottom: 15px; line-height: 1; }
+        .role-desc { font-size: 1rem; color: #ffffff; line-height: 1.4; }
+        .player-info { font-size: 0.75rem; opacity: 0.5; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+        .btn-main { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 18px; font-weight: bold; width: 100%; max-width: 330px; cursor: pointer; font-size: 1.1rem; }
+        input[type="text"] { width: 100%; max-width: 330px; padding: 16px; border-radius: 14px; border: 1px solid #1e293b; background: #0f172a; color: white; margin-bottom: 15px; font-size: 1rem; box-sizing: border-box; }
+        .zoz-btn { background: #1e293b; color: white; border: 1px solid #334155; padding: 10px; margin: 4px; border-radius: 10px; width: 45%; cursor: pointer; }
+        .zoz-btn.selected { border-color: var(--accent); background: #312e81; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--card-bg); padding: 25px; border-radius: 25px; width: 100%; max-width: 350px; border: 1px solid #475569; max-height: 70vh; overflow-y: auto; }
+        .neon-la-d { border-color: var(--neon-la-d); } .neon-la-d .role-name { color: var(--neon-la-d); }
+        .neon-la-zoz { border-color: var(--neon-la-zoz); } .neon-la-zoz .role-name { color: var(--neon-la-zoz); }
+        .neon-ste-marie { border-color: var(--neon-ste-marie); } .neon-ste-marie .role-name { color: var(--neon-ste-marie); }
+        .neon-aveugle { border-color: var(--neon-aveugle); } .neon-aveugle .role-name { color: var(--neon-aveugle); }
+        .neon-cloche { border-color: var(--neon-cloche); } .neon-cloche .role-name { color: var(--neon-cloche); }
+        .neon-capitaine { border-color: var(--neon-capitaine); } .neon-capitaine .role-name { color: var(--neon-capitaine); }
+        .neon-opps { border-color: var(--neon-opps); } .neon-opps .role-name { color: var(--neon-opps); }
+        .neon-paf { border-color: var(--neon-paf); } .neon-paf .role-name { color: var(--neon-paf); }
+        .neon-kamikaze { border-color: var(--neon-kamikaze); } .neon-kamikaze .role-name { color: var(--neon-kamikaze); }
     </style>
 </head>
 <body>
@@ -146,7 +105,6 @@
         <h2 id="next-player-name" style="font-size: 1.8rem; margin-bottom: 30px;"></h2>
         <button class="btn-main" onclick="revealRoleNow()">DÉVOILER MON RÔLE</button>
     </div>
-    
     <div id="role-display-area">
         <div id="role-screen" class="role-card-ui">
             <div id="overlay-player" class="player-info"></div>
@@ -154,7 +112,7 @@
             <div id="overlay-desc" class="role-desc"></div>
             <div id="zoz-choice-container" style="display:none; flex-wrap:wrap; justify-content:center; margin-top:10px;"></div>
         </div>
-        <button id="overlay-btn" class="btn-main" onclick="closeOverlay()">C'EST COMPRIS</button>
+        <button id="overlay-btn" class="btn-main" style="margin-top: 20px;" onclick="closeOverlay()">C'EST COMPRIS</button>
     </div>
 </div>
 
@@ -173,63 +131,53 @@
     };
 
     const allRoles = [
-        { name: "La D", uses: 2, desc: "À n’importe quel moment dans la partie, cette personne peut servir un shot à qui elle le veut (utilisable 2 fois sur 2 personnes différentes)." },
-        { name: "La Zoz", uses: 0, desc: "Au début de la partie, elle choisit une personne avec qui elle est lié, ces deux personnes se connaissent et ne doivent pas se distribuer mutuellement de gorgées." },
-        { name: "La Sainte Marie", uses: 3, desc: "Elle doit trouver qui sont les personnes liées (3 chances). Si elle trouve, les amoureux boivent un shot chacun." },
-        { name: "L'Aveugle", uses: 2, desc: "À n’importe quel moment, cette personne peut servir un verre dosé à « l’aveugle » (utilisable 2 fois)." },
-        { name: "Cloche Brésilienne", uses: 2, desc: "Cette personne peut empêcher qui elle désire de boire (y compris elle-même). Utilisable 1x sur soi, 1x sur un autre." },
-        { name: "Le Cacapitaine", uses: 2, desc: "Deux fois dans la partie, cette personne peut décider de changer le destinataire d’un verre, d’une gorgée ou d’un shot." },
-        { name: "Le Opps", uses: 0, desc: "Tu connais les Zoz. Ton rôle est de faire découvrir à la Sainte Marie qui ils sont sans te faire griller." },
-        { name: "Paf", uses: 2, desc: "Pendant les cartes Beverage 'distribue...', tu peux dire PAF et distribuer toi-même les gorgées (utilisable 2 fois)." },
-        { name: "Le Kamikaze", uses: 1, desc: "À tout moment, désigne quelqu'un : TIC-TAC. Il a 10s pour finir son verre. S'il réussit, TU bois cul-sec. S'il échoue, il boit tout." }
+        { name: "La D", uses: 2, desc: "Sers un shot à qui tu veux (2 utilisations)." },
+        { name: "La Zoz", uses: 0, desc: "Choisis un partenaire lié. Pas de boissons mutuelles." },
+        { name: "La Sainte Marie", uses: 3, desc: "Trouve les Zoz (3 chances). Succès = Ils boivent." },
+        { name: "L'Aveugle", uses: 2, desc: "Sers un verre dosé à l'aveugle (2 utilisations)." },
+        { name: "Cloche Brésilienne", uses: 2, desc: "Annule une boisson (1x sur soi, 1x sur autrui)." },
+        { name: "Le Cacapitaine", uses: 2, desc: "Change le destinataire d'un verre/shot (2 utilisations)." },
+        { name: "Le Opps", uses: 0, desc: "Tu connais les Zoz. Aide la Sainte Marie à les trouver." },
+        { name: "Paf", uses: 2, desc: "Prends le contrôle d'une distribution Beverage (2 utilisations)." },
+        { name: "Le Kamikaze", uses: 1, desc: "TIC-TAC (10s pour finir son verre). Échec = Tu bois cul-sec." }
     ];
 
     const baseCards = [
-        // CAT 1 : ACCUSATION
         {cat:1, text:"Qui est le plus susceptible de texter son ex après 3 verres ?"},
         {cat:1, text:"Qui est le plus mauvais conducteur du groupe ?"},
         {cat:1, text:"Qui pourrait participer à une émission de télé-réalité ?"},
-        {cat:1, text:"L'Infiltré : Qui est le plus susceptible de s'incruster à un mariage ou une soirée où il n'est pas invité ?"},
-        {cat:1, text:"Le Mytho : Qui est le plus capable de mentir avec un calme olympien pour se sortir d'une galère ?"},
-        {cat:1, text:"Le Survivor : Qui survivrait le plus longtemps dans un film d'horreur ?"},
-        {cat:1, text:"L'innocent : qui mourrait en premier dans un film d'horreur ?"},
-        {cat:1, text:"Le Mauvais Plan : Qui est le plus susceptible de finir avec un tatouage qu'il regrettera toute sa vie sur un coup de tête ?"},
-        {cat:1, text:"Le Red Flag : Qui a le pire goût en matière de fréquentation amoureuse ?"},
-        {cat:1, text:"Le Syndrome de Stockholm : Qui est le plus susceptible de tomber amoureux de quelqu'un qui ne le/la calcule absolument pas ?"},
-        {cat:1, text:"Morphée : Qui est le plus susceptible de disparaître de la soirée sans prévenir personne pour aller dormir ?"},
-        {cat:1, text:"Le Fugitif : Qui est le plus capable de partir de la soirée avec les chaussures (ou un vêtement autre) de quelqu'un d'autre par erreur ?"},
-
-        // CAT 2 : BEVERAGE
-        {cat:2, text:"Bois 2 gorgées"}, {cat:2, text:"Bois 3 gorgées"}, {cat:2, text:"Bois 4 gorgées"},
-        {cat:2, text:"Bois 5 gorgées"}, {cat:2, text:"Bois 1 shot"}, {cat:2, text:"Distribue 2 gorgées"},
-        {cat:2, text:"Distribue 3 gorgées"}, {cat:2, text:"Distribue 4 gorgées"}, {cat:2, text:"Distribue 5 gorgées"},
-        {cat:2, text:"Distribue 1 shot"},
-
-        // CAT 3 : PACTE DU DIABLE
-        {cat:3, text:"(Désigne 3 personnes) : Avec qui pars-tu en vacances, avec qui tu ouvres un business, et qui tu laisses tomber en panne sur l'autoroute ?"},
-        {cat:3, text:"(Désigne 2 personnes) : Tu dois en sauver une d'un incendie, l'autre perd tous ses cheveux. Qui choisis-tu ?"},
-        {cat:3, text:"(désigne 3 personnes) : Tu es sur une île déserte. Avec qui tu te maries pour survivre, avec qui tu passes une nuit pour oublier ta solitude, et lequel tu sacrifies pour manger ?"},
-        {cat:3, text:"(Désigne 3 personnes) : tu vas mourir sauf si les conditions sont respecté, choisi 3 personne. Une doit prêter 1000€, une doit dire 5 blagues racistes, une doit se casser la gueule."},
-        {cat:3, text:"(désigne 3 personnes) : kiss marry ou fuck (les autres choisisses les acteurs de la question)."},
-        {cat:3, text:"Le Swap de vie : (Désigne 2 personnes) : Tu dois échanger ta famille avec l'un et ton compte bancaire avec l'autre."},
-        {cat:3, text:"Les complices : (Désigne 3 personnes) : Tu dois classer 3 personnes de celle que tu appellerais après un crime à celle à qui tu ne dirais rien."},
-
-        // CAT 4 : DEFI FLASH
-        {cat:4, text:"L'idiot : chaque fois que tu répond a une question tu bois (hors question obligatoire, jusqu'à la prochaine question)"},
-        {cat:4, text:"Le fou : Désigne deux personnes, elles doivent échanger leurs verres"},
-        {cat:4, text:"Le Sommelier : Remplis le prochain verre de la personne de ton choix avec les doses que tu veux"},
-        {cat:4, text:"L'ivrogne : les autres te font ton prochain verre, dosé à leur souhait"},
-        {cat:4, text:"Le Muet : Tu ne dois plus parler jusqu'à ton prochain tour"},
-        {cat:4, text:"Cascade : Tout le monde commence à boire. Tu décides du nombre de gorgée mais tu en bois 2 de plus"},
-        {cat:4, text:"Le Miroir : Choisis un 'jumeau'. Chaque fois qu'il boit, tu bois. Chaque fois que tu bois, il boit (jusqu'à la fin de la partie)."},
-        {cat:4, text:"Le Sniper : Tu peux dire 'pouce'. Tout le monde doit toucher son menton. Le dernier boit 3 gorgées."},
-        {cat:4, text:"Le try Harder : Tu peux dire 'pouce'. La premiere personne a toucher son menton boit 3 gorgées."},
-        {cat:4, text:"Le roi : tu peux instaurer la regle de ton choix jusqu'a la fin de la partie"},
-        {cat:4, text:"Le géolier : désigne deux personnes qui seront dans une chaîne (quand le premier boit, le second aussi)"},
-        {cat:4, text:"Le Kamikaze : Bois un shot. Si tu le fais, désigne deux personnes qui doivent finir leur verre. Sinon, bois 5 gorgées."},
-        {cat:4, text:"Le T-Rex : Garde les coudes collés aux côtes. Si tu décolles un coude : 2 gorgées (reexploitable) jusqu'à ton prochain tour."},
-        {cat:4, text:"Le Maître des Prénoms : Interdiction d'appeler par le prénom. 'Chef(fe)' ou 'Champion(ne)' uniquement. Erreur = 1 gorgée."},
-        {cat:4, text:"Le Vote Blanc : Tu n'as plus le droit de donner ton avis lors d'un vote de plaidoirie"}
+        {cat:1, text:"L'Infiltré : Qui s'incrusterait à un mariage sans y être invité ?"},
+        {cat:1, text:"Le Mytho : Qui ment avec un calme olympien pour se sortir d'une galère ?"},
+        {cat:1, text:"Le Survivor : Qui survivrait le plus longtemps ?"},
+        {cat:1, text:"L'innocent : qui mourrait en premier ?"},
+        {cat:1, text:"Mauvais Plan : Tatouage regrettable sur un coup de tête ?"},
+        {cat:1, text:"Red Flag : Qui a le pire goût amoureux ?"},
+        {cat:1, text:"Stockholm : Qui tombe amoureux de qui l'ignore ?"},
+        {cat:1, text:"Morphée : Qui disparaît sans prévenir pour dormir ?"},
+        {cat:1, text:"Le Fugitif : Qui part avec les pompes d'un autre ?"},
+        {cat:2, text:"Bois 2 gorgées"}, {cat:2, text:"Bois 3 gorgées"}, {cat:2, text:"Bois 4 gorgées"}, {cat:2, text:"Bois 5 gorgées"}, {cat:2, text:"Bois 1 shot"}, {cat:2, text:"Distribue 2 gorgées"}, {cat:2, text:"Distribue 3 gorgées"}, {cat:2, text:"Distribue 4 gorgées"}, {cat:2, text:"Distribue 5 gorgées"}, {cat:2, text:"Distribue 1 shot"},
+        {cat:3, text:"(Désigne 3) : Vacances, Business, ou panne sur l'autoroute ?"},
+        {cat:3, text:"(Désigne 2) : Sauve l'un d'un incendie, l'autre perd tous ses cheveux."},
+        {cat:3, text:"(Désigne 3) : Île déserte. Mariage, une nuit, ou sacrifice ?"},
+        {cat:3, text:"(Désigne 3) : Une personne prête 1000€, une dit 5 blagues racistes, une se casse la gueule."},
+        {cat:3, text:"(Désigne 3) : Kiss, Marry ou Fuck (Le groupe choisit)."},
+        {cat:3, text:"Le Swap : Échange ta famille avec l'un et ton compte bancaire."},
+        {cat:3, text:"Les complices : Classe 3 personnes (du complice au traître)."},
+        {cat:4, text:"L'idiot : Chaque réponse à une question = boire."},
+        {cat:4, text:"Le fou : Désigne 2 personnes, elles échangent leurs verres."},
+        {cat:4, text:"Le Sommelier : Remplis le prochain verre de la personne de ton choix."},
+        {cat:4, text:"L'ivrogne : Les autres dosent ton prochain verre."},
+        {cat:4, text:"Le Muet : Silence jusqu'à ton prochain tour."},
+        {cat:4, text:"Cascade : Tout le monde boit. Tu décides de la fin (+2)."},
+        {cat:4, text:"Le Miroir : Choisis un jumeau. Verres liés."},
+        {cat:4, text:"Le Sniper : POUCE ! Le dernier boit 3."},
+        {cat:4, text:"Le try Harder : POUCE ! Le PREMIER boit 3."},
+        {cat:4, text:"Le Roi : Instaure une règle jusqu'à la fin."},
+        {cat:4, text:"Le Géolier : Lie 2 personnes (elles boivent ensemble)."},
+        {cat:4, text:"Le Kamikaze : Shot pour forcer 2 personnes à finir leur verre."},
+        {cat:4, text:"Le T-Rex : Coudes collés au corps. Erreur = 2 gorgées."},
+        {cat:4, text:"Le Maître des Prénoms : Appelle tout le monde Chef ou Champion."},
+        {cat:4, text:"Le Vote Blanc : Plus de vote lors des plaidoiries."}
     ];
 
     function registerPlayer() {
@@ -245,8 +193,7 @@
     function showRoleConfig() {
         document.getElementById('setup-tab').classList.remove('active');
         document.getElementById('config-tab').classList.add('active');
-        const rolesList = document.getElementById('role-selector-list');
-        rolesList.innerHTML = allRoles.map((r, i) => `
+        document.getElementById('role-selector-list').innerHTML = allRoles.map((r, i) => `
             <div style="display:flex; justify-content:space-between; background:#0f172a; padding:12px; margin:8px 0; border-radius:12px; border:1px solid #1e293b;">
                 <label style="font-weight:bold;">${r.name}</label>
                 <input type="checkbox" id="role-${i}" checked style="width:20px; height:20px;">
@@ -255,29 +202,40 @@
     }
 
     function validateAndStart() {
-        let pool = [];
-        allRoles.forEach((r, i) => { if(document.getElementById(`role-${i}`).checked) pool.push({...r, currentUses:0}); });
-        const duplicatables = ["La D", "L'Aveugle", "Cloche Brésilienne", "Le Cacapitaine", "Paf", "Le Kamikaze"];
-        let rolesToAssign = [...pool].sort(() => 0.5 - Math.random()).slice(0, players.length);
+        let selected = [];
+        allRoles.forEach((r, i) => { if(document.getElementById(`role-${i}`).checked) selected.push({...r, currentUses:0}); });
+        
+        // Séparation rôles uniques vs répétables
+        const singularNames = ["La Zoz", "Le Opps", "La Sainte Marie"];
+        let rolesToAssign = [];
+        let singularPool = selected.filter(r => singularNames.includes(r.name)).sort(() => 0.5 - Math.random());
+        let repeatablePool = selected.filter(r => !singularNames.includes(r.name));
+
+        rolesToAssign = singularPool.slice(0, Math.min(singularPool.length, players.length));
+        
         while(rolesToAssign.length < players.length) {
-            let dup = {...allRoles.find(r => duplicatables.includes(r.name))};
-            rolesToAssign.push({...dup, currentUses: 0});
+            rolesToAssign.push({...repeatablePool[Math.floor(Math.random() * repeatablePool.length)]});
         }
+
+        rolesToAssign.sort(() => 0.5 - Math.random());
+        
+        // Distribution spécifique Opps après Zoz
         let finalMapping = new Array(players.length).fill(null);
-        let pIdx = Array.from({length: players.length}, (_, i) => i);
+        let pIndices = Array.from({length: players.length}, (_, i) => i);
         let zoz = rolesToAssign.find(r => r.name === "La Zoz");
         let opps = rolesToAssign.find(r => r.name === "Le Opps");
+
         if(zoz && opps) {
             let zIdx = Math.floor(Math.random() * (players.length - 1));
             finalMapping[zIdx] = zoz; rolesToAssign.splice(rolesToAssign.indexOf(zoz), 1);
-            pIdx.splice(pIdx.indexOf(zIdx), 1);
-            let pOpps = pIdx.filter(i => i > zIdx);
+            pIndices.splice(pIndices.indexOf(zIdx), 1);
+            let pOpps = pIndices.filter(i => i > zIdx);
             let oIdx = pOpps[Math.floor(Math.random() * pOpps.length)];
             finalMapping[oIdx] = opps; rolesToAssign.splice(rolesToAssign.indexOf(opps), 1);
-            pIdx.splice(pIdx.indexOf(oIdx), 1);
+            pIndices.splice(pIndices.indexOf(oIdx), 1);
         }
-        rolesToAssign.sort(() => 0.5 - Math.random());
-        pIdx.forEach((idx, i) => finalMapping[idx] = rolesToAssign[i]);
+
+        pIndices.forEach((idx, i) => finalMapping[idx] = rolesToAssign[i]);
         players.forEach((p, i) => rolesData[p] = finalMapping[i]);
         currentIdx = 0;
         document.getElementById('overlay').style.display = 'flex';
@@ -311,7 +269,7 @@
         listContainer.innerHTML = assignedRoles.map(roleName => {
             const roleInfo = allRoles.find(r => r.name === roleName);
             return `<div style="border-bottom:1px solid #1e293b; padding:10px 0; text-align:left;">
-                <b style="color:var(--accent); font-size:0.85rem;">${roleName}</b>
+                <b style="color:var(--accent); text-transform:uppercase;">${roleName}</b>
                 <p style="font-size:0.75rem; opacity:0.8; margin:4px 0;">${roleInfo.desc}</p>
             </div>`;
         }).join('');
