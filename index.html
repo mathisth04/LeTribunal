@@ -3,56 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Tribunal - Rôles Secrets</title>
+    <title>Tribunal - Rôles Dynamiques</title>
     <style>
         :root {
             --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc; --accent: #6366f1;
             --cat1: #3b82f6; --cat2: #ef4444; --cat3: #a855f7; --cat4: #10b981;
         }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        
         .tab-content { display: none; flex-direction: column; align-items: center; padding: 20px; flex: 1; overflow-y: auto; }
         .tab-content.active { display: flex; }
-
         .btn-main { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
         input { width: 80%; padding: 12px; border-radius: 8px; border: none; background: #1e293b; color: white; margin-bottom: 10px; }
-
-        /* Full screen overlay pour les rôles */
-        #overlay {
-            display: none; position: fixed; inset: 0; background: var(--bg); z-index: 100;
-            flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center;
-        }
-
-        .role-card {
-            width: 80vw; max-width: 300px; padding: 40px 20px;
-            background: var(--card-bg); border-radius: 25px; border: 4px solid var(--accent);
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-        }
-
-        .player-tag { background: #334155; padding: 8px 15px; border-radius: 20px; margin: 5px; display: inline-block; }
-
-        /* Game Card */
-        .card {
-            width: 80vw; max-width: 320px; height: 110vw; max-height: 450px;
-            background: var(--card-bg); border-radius: 25px; border: 5px solid var(--text);
-            display: flex; flex-direction: column; justify-content: center; padding: 25px;
-            text-align: center; position: relative; margin: 20px 0;
-        }
+        #overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 100; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
+        .role-card { width: 85vw; max-width: 350px; padding: 30px 20px; background: var(--card-bg); border-radius: 25px; border: 4px solid var(--accent); }
+        .player-tag { background: #334155; padding: 8px 15px; border-radius: 20px; margin: 5px; display: inline-block; font-size: 0.8rem; }
+        .card { width: 80vw; max-width: 320px; height: 100vw; max-height: 400px; background: var(--card-bg); border-radius: 25px; border: 5px solid var(--text); display: flex; flex-direction: column; justify-content: center; padding: 25px; text-align: center; position: relative; margin: 20px 0; }
+        .zoz-btn { background: #334155; color: white; border: 1px solid var(--accent); padding: 10px; margin: 5px; border-radius: 8px; width: 45%; cursor: pointer; }
+        .zoz-btn.selected { background: var(--accent); }
     </style>
 </head>
 <body>
 
 <div id="setup-tab" class="tab-content active">
     <h1>Le Tribunal</h1>
-    <p>Entrez un prénom pour découvrir votre rôle</p>
-    <input type="text" id="p-name" placeholder="Ton prénom...">
-    <button class="btn-main" onclick="registerPlayer()">AJOUTER & VOIR RÔLE</button>
-    
-    <div id="players-ready" style="margin-top:30px; text-align:center;">
-        <h3>Joueurs inscrits :</h3>
-        <div id="list-names"></div>
-        <button id="start-btn" class="btn-main" style="display:none; background:var(--cat4);" onclick="startFullReveal()">LANCER LA PARTIE</button>
+    <p>Ajoutez les joueurs (min. 5)</p>
+    <div style="width:100%; display:flex; gap:5px; justify-content:center;">
+        <input type="text" id="p-name" placeholder="Prénom...">
+        <button onclick="registerPlayer()" style="background:var(--accent); border:none; border-radius:8px; padding:0 15px; color:white; font-weight:bold;">+</button>
     </div>
+    <div id="list-names" style="margin: 20px 0;"></div>
+    <button id="start-btn" class="btn-main" style="display:none; background:var(--cat4);" onclick="startFullReveal()">LANCER LA PARTIE</button>
 </div>
 
 <div id="game-tab" class="tab-content">
@@ -70,10 +50,7 @@
         <h2 id="overlay-player">Joueur</h2>
         <h1 id="overlay-role" style="color:var(--accent);">Rôle</h1>
         <p id="overlay-desc"></p>
-        <div id="zoz-choice" style="display:none; margin-top:15px;">
-            <p>Choisis ton partenaire :</p>
-            <div id="zoz-list"></div>
-        </div>
+        <div id="zoz-choice" style="display:none; margin-top:15px; display:flex; flex-wrap:wrap; justify-content:center;"></div>
         <button id="overlay-btn" class="btn-main" onclick="closeOverlay()">OK</button>
     </div>
 </div>
@@ -85,32 +62,30 @@
     let rolePool = ["La D", "La Zoz", "La Sainte Marie", "L'Aveugle", "Cloche Brésilienne", "Le Cacapitaine", "Le Opps", "Paf", "Le Kamikaze"];
     let deck = [];
     let currentIdx = 0;
-    let revealMode = "light"; // "light" au début, "full" au lancement
-
-    const cards = [
-        {cat:1, text:"Qui texterait son ex après 3 verres ?"},
-        {cat:1, text:"Qui est le plus mauvais conducteur ?"},
-        {cat:2, text:"Bois 3 gorgées"},
-        {cat:2, text:"Distribue 1 shot"},
-        {cat:3, text:"(Désigne 3) : Vacances, Business, ou panne sur l'autoroute ?"},
-        {cat:4, text:"Le Sniper : POUCE ! Le dernier boit 3."}
-        // ... (Ajoute le reste de ta liste ici)
-    ];
+    let revealMode = "light"; 
+    let oppsWaiting = false;
 
     function registerPlayer() {
         const name = document.getElementById('p-name').value.trim();
         if(!name) return;
-        if(rolePool.length === 0) { alert("Plus de rôles disponibles !"); return; }
+        
+        // Sécurité : On ne donne le Opps que si la Zoz a déjà été tirée OU s'il ne reste que le Opps
+        let availableRoles = [...rolePool];
+        if(!Object.values(rolesData).some(r => r.role === "La Zoz") && availableRoles.includes("Le Opps") && availableRoles.length > 1) {
+            availableRoles = availableRoles.filter(r => r !== "Le Opps");
+        }
 
-        const role = rolePool.splice(Math.floor(Math.random() * rolePool.length), 1)[0];
+        const role = availableRoles.splice(Math.floor(Math.random() * availableRoles.length), 1)[0];
+        rolePool.splice(rolePool.indexOf(role), 1);
+        
         players.push(name);
         rolesData[name] = { role: role, desc: getDesc(role) };
 
-        // Affichage light
         document.getElementById('overlay-player').innerText = name;
         document.getElementById('overlay-role').innerText = role;
         document.getElementById('overlay-desc').innerText = "";
         document.getElementById('overlay-btn').innerText = "OK, JE CACHE";
+        document.getElementById('zoz-choice').style.display = "none";
         document.getElementById('overlay').style.display = 'flex';
         
         document.getElementById('p-name').value = "";
@@ -125,7 +100,7 @@
             "L'Aveugle": "Sert un verre dosé à l'aveugle (2x).",
             "Cloche Brésilienne": "Annule une boisson pour toi ou un autre (2x).",
             "Le Cacapitaine": "Change le destinataire d'un verre/shot (2x).",
-            "Le Opps": "Découvre qui sont les Zoz et aide la Sainte Marie.",
+            "Le Opps": "Guide la Sainte Marie discrètement.",
             "Paf": "Sur un 'Distribue', dis PAF et distribue toi-même (2x).",
             "Le Kamikaze": "Dis TIC-TAC: 10s pour finir. S'il réussit, tu bois."
         };
@@ -150,43 +125,62 @@
         document.getElementById('overlay').style.display = 'flex';
         document.getElementById('overlay-player').innerText = name;
         document.getElementById('overlay-role').innerText = data.role;
-        
+        document.getElementById('overlay-desc').innerText = data.desc;
+        document.getElementById('overlay-btn').style.display = "block";
+
         if(data.role === "La Zoz") {
-            document.getElementById('overlay-desc').innerText = "Choisis les deux membres du duo :";
-            document.getElementById('zoz-choice').style.display = 'block';
-            document.getElementById('zoz-list').innerHTML = players.map(p => 
-                `<button class="btn-main" style="font-size:0.8rem; padding:5px;" onclick="selectZoz('${p}')">${p}</button>`
+            document.getElementById('overlay-btn').style.display = "none";
+            document.getElementById('zoz-choice').style.display = "flex";
+            document.getElementById('zoz-choice').innerHTML = players.map(p => 
+                `<button class="zoz-btn" id="zoz-${p}" onclick="selectZoz('${p}')">${p}</button>`
             ).join('');
-            document.getElementById('overlay-btn').style.display = 'none';
         } else if(data.role === "Le Opps") {
-            const duo = zozPartners.length > 0 ? zozPartners.join(" et ") : "pas encore désignés";
-            document.getElementById('overlay-desc').innerText = `Les personnes liées sont : ${duo}. Aide la Sainte Marie.`;
-            document.getElementById('zoz-choice').style.display = 'none';
-            document.getElementById('overlay-btn').style.display = 'block';
-        } else {
-            document.getElementById('overlay-desc').innerText = data.desc;
-            document.getElementById('zoz-choice').style.display = 'none';
-            document.getElementById('overlay-btn').style.display = 'block';
+            if(zozPartners.length < 2) {
+                document.getElementById('overlay-desc').innerText = "La Zoz n'a pas encore choisi. Passe le téléphone, tu reviendras à la fin !";
+                oppsWaiting = true;
+            } else {
+                document.getElementById('overlay-desc').innerText = `Les Zoz sont : ${zozPartners.join(" et ")}.`;
+                oppsWaiting = false;
+            }
         }
     }
 
     function selectZoz(pName) {
-        zozPartners.push(pName);
+        const btn = document.getElementById(`zoz-${pName}`);
+        if(zozPartners.includes(pName)) {
+            zozPartners = zozPartners.filter(p => p !== pName);
+            btn.classList.remove('selected');
+        } else if(zozPartners.length < 2) {
+            zozPartners.push(pName);
+            btn.classList.add('selected');
+        }
+
         if(zozPartners.length === 2) {
-            document.getElementById('zoz-choice').style.display = 'none';
-            document.getElementById('overlay-btn').style.display = 'block';
-            document.getElementById('overlay-desc').innerText = `Duo enregistré : ${zozPartners[0]} & ${zozPartners[1]}`;
+            document.getElementById('overlay-btn').style.display = "block";
+            document.getElementById('overlay-btn').innerText = "VALIDER LE DUO";
+        } else {
+            document.getElementById('overlay-btn').style.display = "none";
         }
     }
 
     function closeOverlay() {
         document.getElementById('overlay').style.display = 'none';
+        document.getElementById('zoz-choice').style.display = "none";
+        
         if(revealMode === "full") {
-            currentIdx++;
-            if(currentIdx < players.length) {
-                showFullRole();
+            if(oppsWaiting && currentIdx < players.length - 1) {
+                // On met le Opps à la fin de la liste de révélation
+                const oppsName = players.splice(currentIdx, 1)[0];
+                players.push(oppsName);
+                oppsWaiting = false;
+                showFullRole(); // On affiche le joueur suivant qui a pris la place
             } else {
-                startGame();
+                currentIdx++;
+                if(currentIdx < players.length) {
+                    showFullRole();
+                } else {
+                    startGame();
+                }
             }
         }
     }
@@ -194,22 +188,30 @@
     function startGame() {
         document.getElementById('setup-tab').classList.remove('active');
         document.getElementById('game-tab').classList.add('active');
-        deck = [...cards];
+        deck = [...baseCards];
         currentIdx = 0;
         drawCard();
     }
 
+    // --- CARDS ---
+    const baseCards = [
+        {cat:1, text:"Qui texterait son ex après 3 verres ?"},
+        {cat:1, text:"Qui est le plus mauvais conducteur ?"},
+        {cat:1, text:"L'Infiltré : Qui s'incrusterait à un mariage ?"},
+        {cat:2, text:"Bois 3 gorgées"},
+        {cat:2, text:"Distribue 1 shot"},
+        {cat:3, text:"(Désigne 3) : Vacances, Business, ou panne sur l'autoroute ?"},
+        {cat:4, text:"Le Sniper : POUCE ! Le dernier boit 3."}
+    ];
+
     function drawCard() {
-        if(deck.length === 0) deck = [...cards];
+        if(deck.length === 0) deck = [...baseCards];
         document.getElementById('turn-info').innerText = "Tour de : " + players[currentIdx];
-        
         const rIdx = Math.floor(Math.random() * deck.length);
         const c = deck[rIdx];
-        
         document.getElementById('c-cat').innerText = ["", "ACCUSATION", "BEVERAGE", "PACTE", "DÉFI"][c.cat];
         document.getElementById('main-card').style.borderColor = [`var(--text)`, `var(--cat1)`, `var(--cat2)`, `var(--cat3)`, `var(--cat4)`][c.cat];
         document.getElementById('c-text').innerText = c.text;
-        
         if(c.cat !== 2) deck.splice(rIdx, 1);
         currentIdx = (currentIdx + 1) % players.length;
     }
